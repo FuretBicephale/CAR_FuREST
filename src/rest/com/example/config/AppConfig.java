@@ -32,8 +32,8 @@ public class AppConfig {
 		JAXRSServerFactoryBean factory = RuntimeDelegate.getInstance().createEndpoint( jaxRsApiApplication(), JAXRSServerFactoryBean.class );
 		
 		List<Object> serviceBeans = new ArrayList<Object>();
-//		serviceBeans.add(peopleRestService());
-		serviceBeans.add(new HelloWorldResource());
+		//serviceBeans.add(peopleRestService());
+		serviceBeans.add(new rest.ftp.FTPResource());
 		
 		factory.setServiceBeans(serviceBeans);
 		factory.setAddress( "/" + factory.getAddress() );
