@@ -1,4 +1,4 @@
-package rest.com.example.config;
+package rest.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,48 +14,48 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
-import rest.car.HelloWorldResource;
+import rest.api.JaxRsApiApplication;
 
-import rest.com.example.rs.JaxRsApiApplication;
-import rest.com.example.rs.PeopleRestService;
-import rest.com.example.services.PeopleService;
-
+/**
+ * @author cachera - falez
+ * A REST Application configuration launched in a REST Server.
+ * The application is accessible at serverAddress/api with serverAddress the server address.
+ */
 @Configuration
 public class AppConfig {	
-	@Bean( destroyMethod = "shutdown" )
+	
+	/**
+	 * 
+	 * @return
+	 */
+	@Bean(destroyMethod = "shutdown")
 	public SpringBus cxf() {
 		return new SpringBus();
 	}
 	
-	@Bean @DependsOn( "cxf" )
+	/**
+	 * 
+	 * @return
+	 */
+	@Bean @DependsOn("cxf")
 	public Server jaxRsServer() {
-		JAXRSServerFactoryBean factory = RuntimeDelegate.getInstance().createEndpoint( jaxRsApiApplication(), JAXRSServerFactoryBean.class );
+		
+		JAXRSServerFactoryBean factory = RuntimeDelegate.getInstance().createEndpoint(new JaxRsApiApplication(), JAXRSServerFactoryBean.class);
 		
 		List<Object> serviceBeans = new ArrayList<Object>();
-		//serviceBeans.add(peopleRestService());
 		serviceBeans.add(new rest.ftp.FTPResource());
 		
 		factory.setServiceBeans(serviceBeans);
-		factory.setAddress( "/" + factory.getAddress() );
-		factory.setProviders( Arrays.< Object >asList( jsonProvider() ) );
+		factory.setAddress("/" + factory.getAddress());
+		factory.setProviders(Arrays.<Object>asList(jsonProvider()));
 		return factory.create();
-	}
-	
-	@Bean 
-	public JaxRsApiApplication jaxRsApiApplication() {
-		return new JaxRsApiApplication();
-	}
-	
-	@Bean 
-	public PeopleRestService peopleRestService() {
-		return new PeopleRestService();
-	}
-	
-	@Bean 
-	public PeopleService peopleService() {
-		return new PeopleService();
+		
 	}
 		
+	/**
+	 * 
+	 * @return
+	 */
 	@Bean
 	public JacksonJsonProvider jsonProvider() {
 		return new JacksonJsonProvider();
