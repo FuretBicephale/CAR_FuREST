@@ -14,8 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
-import rest.car.HelloWorldResource;
-
 import rest.com.example.rs.JaxRsApiApplication;
 import rest.com.example.rs.PeopleRestService;
 import rest.com.example.services.PeopleService;
