@@ -12,6 +12,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import org.apache.commons.net.ftp.*;
 
+/**
+ * @author cachera - falez
+ * A REST Application Ressource which access to a FTP Server. It defines Ressource pathname and contents.
+ * The Ressource is accessible at apiAddress/ftp with apiAddress the Application address.
+ */
 @Path("/ftp")
 public class FTPResource {
 	
@@ -52,4 +57,3 @@ public class FTPResource {
 	}
 
 }
-
