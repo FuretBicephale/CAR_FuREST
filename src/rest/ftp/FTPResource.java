@@ -25,10 +25,10 @@ public class FTPResource {
 	public String sayHello() {
 		return "<h1>Bienvenue.</h1>";
 	}
-	
+	/*
 	@GET
 	@Path("{path: .*}")
-	@Produces("application/octet-stream")
+	@Produces("application/html")
 	public byte[] resolvePathname( @PathParam("path") String pathname ) {
 		System.out.println("PATH="+pathname);
 		FTPClient client = new FTPClient();
@@ -54,6 +54,6 @@ public class FTPResource {
 		}
 		
 		 return null;
-	}
+	}*/
 
 }

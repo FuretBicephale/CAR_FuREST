@@ -21,7 +21,7 @@ public class Main {
 	 */
 	public static void main(final String[] args) {
 		
-		Server server = new Server(2342);
+		Server server = new Server(8080);
  		final ServletHolder servletHolder = new ServletHolder(new CXFServlet());
  		final ServletContextHandler context = new ServletContextHandler();	
  		
