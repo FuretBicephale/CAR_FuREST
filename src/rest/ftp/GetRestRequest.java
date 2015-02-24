@@ -6,7 +6,13 @@ import java.io.InputStream;
 import javax.ws.rs.Produces;
 
 public class GetRestRequest {
-		
+
+	/**
+	 * Send a RETR Request to the FTP Server for the file designed by session uri and return the file as a byte array to be download
+	 * @param session The session which send the RETR Request
+	 * @param information Information about the FTP Request
+	 * @return A byte array containing the file if it's found, null otherwise
+	 */
 	@Produces("application/octet-stream")
 	public static byte[] getFile(FTPSession session, GetRestRequestInformation information) throws IOException {
 		InputStream stream = session.getFTPClient().retrieveFileStream(information.getURI());
@@ -31,6 +37,12 @@ public class GetRestRequest {
 		return buffer;
 	}
 
+	/**
+	 * Send a LIST Request to the FTP Server for the directory designed by session uri and return a HTML page as a byte array containing the list of the folder's files
+	 * @param session The session which send the LIST Request
+	 * @param information Information about the FTP Request
+	 * @return A byte array which contains HTML Code to display the directory content
+	 */
 	@Produces("text/html")
 	public static byte[] getDirectory(FTPSession session, GetRestRequestInformation information) {
 		String htmlResponse = "";

@@ -14,7 +14,7 @@ import org.apache.commons.net.ftp.FTPFile;
 
 /**
  * @author cachera - falez
- * A REST Application Ressource which access to a FTP Server. It defines Ressource pathname and contents.
+ * A REST Application Resource which access to a FTP Server. It defines Ressource pathname and contents.
  * The Ressource is accessible at apiAddress/ftp with apiAddress the Application address.
  */
 @Path("/ftp")

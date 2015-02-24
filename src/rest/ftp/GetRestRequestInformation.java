@@ -1,5 +1,7 @@
 package rest.ftp;
 
+import java.util.regex.Pattern;
+
 public class GetRestRequestInformation {
 	
 	private String uri;
