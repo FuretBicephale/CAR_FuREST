@@ -15,18 +15,23 @@ public class RestRequest {
 	@GET
 	@Path("{uri: .*}")
 	public byte[] processGetRequest(@PathParam("uri") String uri) {
-		
-		GetRestRequestInformation information = new GetRestRequestInformation();
-		
-		information.setURI(uri);
-		
+
 		FTPSession session;
 		byte[] result = null;
+		
+		GetRestRequestInformation information = new GetRestRequestInformation();
+		information.setURI(uri);
+		
 		try {
 			session = new FTPSession();
 			session.login();
-			result = GetRestRequest.isDirectory(session, uri) ? GetRestRequest.getDirectory(session, information) : GetRestRequest.getFile(session, information);
 			
+			if(session.isDirectory(uri) || uri.equals("")) {
+				result = GetRestRequest.getDirectory(session, information);
+			} else {
+				result = GetRestRequest.getFile(session, information);
+			}
+						
 			session.close();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
@@ -42,6 +47,4 @@ public class RestRequest {
 		return result;
 	}
 
-	
-	
 }

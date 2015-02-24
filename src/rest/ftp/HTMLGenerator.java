@@ -1,5 +1,7 @@
 package rest.ftp;
 
+import org.apache.commons.net.ftp.FTPFile;
+
 public class HTMLGenerator {
 	
 	public static String generateHeader(GetRestRequestInformation information) {
@@ -10,6 +12,21 @@ public class HTMLGenerator {
 						"<title>"+information.getURI()+"</title>\n"+
 					"</head>\n"+
 				"<body>\n";
+	}
+	
+	public static String generateFTPFileList(FTPFile[] ftpFiles) {
+		String htmlResponse = "";
+		
+		for(int i = 0; i < ftpFiles.length; i++) {
+			
+			if(ftpFiles[i].getName().endsWith("~"))
+				break;
+			
+			htmlResponse += "<a href=\"ftp/" + ftpFiles[i].getName() + "\">" + ftpFiles[i] + "</a><br/>";
+			
+		}
+		
+		return htmlResponse;
 	}
 	
 	public static String generateFooter(GetRestRequestInformation information) {

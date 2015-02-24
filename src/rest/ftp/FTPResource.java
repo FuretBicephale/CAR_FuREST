@@ -64,7 +64,7 @@ public class FTPResource {
 	@Produces("application/html")
 	public byte[] resolvePathname(@PathParam("path") String pathname) {
 		
-		System.out.println("File = "+pathname);
+		System.out.println("Retr = "+pathname);
 		FTPClient client = new FTPClient();
 		int length;
 		
@@ -73,13 +73,13 @@ public class FTPResource {
 			client.connect("127.0.0.1", 4223);
 			client.login("user", "password");
 			
-			InputStream stream = client.retrieveFileStream(pathname);
+			/*InputStream stream = client.retrieveFileStream(pathname);
 			
 			while((length = stream.available()) > 0) {
 				byte[] buffer = new byte[length];
  				stream.read(buffer, 0, length);
  				return buffer;
-			}
+			}*/
 			
 		} catch (IOException e) {
 			
@@ -100,7 +100,8 @@ public class FTPResource {
 	@Path("{path: .*}")
 	@Produces("text/html")
 	public String listDir(@PathParam("path") String pathname) {
-		
+
+		System.out.println("List = "+pathname);
 		String htmlReturn = "";
 		FTPClient client = new FTPClient();
 		

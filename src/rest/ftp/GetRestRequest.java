@@ -6,11 +6,7 @@ import java.io.InputStream;
 import javax.ws.rs.Produces;
 
 public class GetRestRequest {
-	
-	public static boolean isDirectory(FTPSession session, String uri) {
-		return false;
-	}
-	
+		
 	@Produces("application/octet-stream")
 	public static byte[] getFile(FTPSession session, GetRestRequestInformation information) throws IOException {
 		InputStream stream = session.getFTPClient().retrieveFileStream(information.getURI());
@@ -37,7 +33,17 @@ public class GetRestRequest {
 
 	@Produces("text/html")
 	public static byte[] getDirectory(FTPSession session, GetRestRequestInformation information) {
-		return (HTMLGenerator.generateHeader(information)+HTMLGenerator.generateFooter(information)).getBytes();
+		String htmlResponse = "";
+		
+		try {
+			htmlResponse = HTMLGenerator.generateHeader(information);
+			htmlResponse = HTMLGenerator.generateFTPFileList(session.getFTPClient().listFiles());
+			htmlResponse += HTMLGenerator.generateFooter(information);
+		} catch (IOException e) {
+			System.err.println("Unable to connect to FTP Server.");
+		}
+		
+		return htmlResponse.getBytes();
 	}
 
 }

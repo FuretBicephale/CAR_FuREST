@@ -13,10 +13,10 @@ public class FTPSession {
 	private FTPClient ftp;
 	
 	public FTPSession() throws SocketException, IOException, FTPBadAnswerException {
-		ftp = new FTPClient();
-		ftp.connect("127.0.0.1", 4223);
+		this.ftp = new FTPClient();
+		this.ftp.connect("127.0.0.1", 4223);
 		
-		int reply = ftp.getReplyCode();
+		int reply = this.ftp.getReplyCode();
 		
 		if(!FTPReply.isPositiveCompletion(reply)) {
 			throw new FTPBadAnswerException(reply);
@@ -25,9 +25,9 @@ public class FTPSession {
 	}
 	
 	public void login() throws IOException, FTPBadAnswerException {
-		ftp.login("user", "password");
+		this.ftp.login("user", "password");
 		
-		int reply = ftp.getReplyCode();
+		int reply = this.ftp.getReplyCode();
 		
 		if(!FTPReply.isPositiveCompletion(reply)) {
 			throw new FTPBadAnswerException(reply);
@@ -35,11 +35,28 @@ public class FTPSession {
 	}
 	
 	public void close() throws IOException {
-		ftp.quit();
+		this.ftp.quit();
 	}
 	
 	public FTPClient getFTPClient() {
-		return ftp;
+		return this.ftp;
+	}
+	
+	public boolean isDirectory(String uri) throws IOException {
+		int returnCode;
+		
+		if(uri.equals("")) {
+			return true;
+		}
+		
+		this.ftp.changeWorkingDirectory(uri);
+	    returnCode = this.ftp.getReplyCode();
+	    
+	    if (returnCode == 550) {
+	        return false;
+	    } else {
+		    return true;	    	
+	    }
 	}
 	
 	
