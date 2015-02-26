@@ -10,7 +10,7 @@ public class HTMLGenerator {
 	
 	/**
 	 * Generate a HTML header with utf-8 encoding and information's URI as title.
-	 * @param information Information of the page containing the header to be generated
+	 * @param information Information of the request asking this header
 	 * @return The HTML Code generated in a String
 	 */
 	public static String generateHeader(GetRestRequestInformation information) {
@@ -27,18 +27,29 @@ public class HTMLGenerator {
 	 * Generate a list of links which are files from a FTPServer. 
 	 * Each link is a CWD or RETR request for the specified file according it's a folder or a file.
 	 * @param ftpFiles The files to generate as a list
+	 * @param information Information of the request asking this list
 	 * @return The HTML Code generated in a String
 	 */
-	public static String generateFTPFileList(FTPFile[] ftpFiles) {
+	public static String generateFTPFileList(FTPFile[] ftpFiles, GetRestRequestInformation information) {
 		String htmlResponse = "";
+		
+		String[] folders;
+		folders = information.getURI().split("/");
+
+		if(!information.getURI().equals("")) {
+			htmlResponse += "<a href=\"\">..</a><br/>";
+		}
 		
 		for(int i = 0; i < ftpFiles.length; i++) {
 			
 			if(ftpFiles[i].getName().endsWith("~"))
-				break;
+				continue;
 			
-			htmlResponse += "<a href=\"ftp/" + ftpFiles[i].getName() + "\">" + ftpFiles[i] + "</a><br/>";
-			
+			if(information.getURI().equals("")) {
+				htmlResponse += "<a href=\"" + ftpFiles[i].getName() + "\">" + ftpFiles[i] + "</a><br/>";
+			} else {
+				htmlResponse += "<a href=\"" + folders[folders.length-1] + "/" + ftpFiles[i].getName() + "\">" + ftpFiles[i] + "</a><br/>";
+			}
 		}
 		
 		return htmlResponse;
@@ -46,7 +57,7 @@ public class HTMLGenerator {
 	
 	/**
 	 * Generate a HTML footer in a String
-	 * @param information Information of the page containing the footer to be generated
+	 * @param information  Information of the request asking this footer
 	 * @return The HTML Code generated in a String
 	 */
 	public static String generateFooter(GetRestRequestInformation information) {
