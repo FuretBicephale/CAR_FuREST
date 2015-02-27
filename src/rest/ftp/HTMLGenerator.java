@@ -1,5 +1,9 @@
 package rest.ftp;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
@@ -31,26 +35,41 @@ public class HTMLGenerator {
 	 * @return The HTML Code generated in a String
 	 */
 	public static String generateFTPFileList(FTPFile[] ftpFiles, GetRestRequestInformation information) {
-		String htmlResponse = "";
+		List<FTPFile> listFile = Arrays.asList(ftpFiles);
+		
+		String htmlResponse = "<table>\n"+
+								"<tr><th>Nom</th><th>Utilisateur</th><th>Derniere modification</th></tr>\n";
 		
 		String[] folders;
 		folders = information.getURI().split("/");
 
 		if(!information.getURI().equals("")) {
-			htmlResponse += "<a href=\"\">..</a><br/>";
+			
+			//get parent directory
+			String parentDirectory = "";
+			for(int i = 0; i < folders.length-1; i++) {
+				parentDirectory += folders+"/";
+			}
+			
+			FTPFile parentEntry = new FTPFile();
+			parentEntry.setName("Parent Directory");
+			
+			listFile.add(parentEntry);
 		}
 		
-		for(int i = 0; i < ftpFiles.length; i++) {
+		for(int i = 0; i < listFile.size(); i++) {
 			
+			/* Wut?
 			if(ftpFiles[i].getName().endsWith("~"))
 				continue;
-			
-			if(information.getURI().equals("")) {
-				htmlResponse += "<a href=\"" + ftpFiles[i].getName() + "\">" + ftpFiles[i] + "</a><br/>";
-			} else {
-				htmlResponse += "<a href=\"" + folders[folders.length-1] + "/" + ftpFiles[i].getName() + "\">" + ftpFiles[i] + "</a><br/>";
-			}
+			*/
+
+
+			SimpleDateFormat format = new SimpleDateFormat("HH:mm DD MMM yyyy"); 
+			htmlResponse += "<tr><td><a href=\""+listFile.get(i).getName()+"\">"+listFile.get(i).getName()+(listFile.get(i).isDirectory() ? "/" : "")+"<a></td><td>"+listFile.get(i).getUser()+"</td><td>"+format.format(listFile.get(i).getTimestamp().getTime())+"</td></tr>\n";
 		}
+		
+		htmlResponse += "</table>\n";
 		
 		return htmlResponse;
 	}
