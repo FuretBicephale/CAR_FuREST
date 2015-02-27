@@ -1,8 +1,13 @@
 package rest.ftp;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -35,14 +40,15 @@ public class HTMLGenerator {
 	 * @return The HTML Code generated in a String
 	 */
 	public static String generateFTPFileList(FTPFile[] ftpFiles, GetRestRequestInformation information) {
-		List<FTPFile> listFile = Arrays.asList(ftpFiles);
-		
+		Map<String, FTPFile> listFile = new HashMap<String, FTPFile>();
 		String htmlResponse = "<table>\n"+
 								"<tr><th>Nom</th><th>Utilisateur</th><th>Derniere modification</th></tr>\n";
 		
 		String[] folders;
 		folders = information.getURI().split("/");
+	
 
+		// Add parent directory link
 		if(!information.getURI().equals("")) {
 			
 			//get parent directory
@@ -52,21 +58,32 @@ public class HTMLGenerator {
 			}
 			
 			FTPFile parentEntry = new FTPFile();
-			parentEntry.setName("Parent Directory");
+			parentEntry.setName(parentDirectory);
 			
-			listFile.add(parentEntry);
+			listFile.put("Parent Directory", parentEntry);
 		}
 		
-		for(int i = 0; i < listFile.size(); i++) {
-			
-			/* Wut?
-			if(ftpFiles[i].getName().endsWith("~"))
-				continue;
-			*/
+		//Add directories first
+		for(int i = 0; i < ftpFiles.length; i++) {
+			if(ftpFiles[i].isDirectory())
+				listFile.put(ftpFiles[i].getName()+"/", ftpFiles[i]);	
+		}
+		
+		// Then regular files
+		for(int i = 0; i < ftpFiles.length; i++) {
+			if(!ftpFiles[i].isDirectory())
+				listFile.put(ftpFiles[i].getName(), ftpFiles[i]);	
+		}
 
+		
+		for(Entry<String, FTPFile> file : listFile.entrySet()) {
 
 			SimpleDateFormat format = new SimpleDateFormat("HH:mm DD MMM yyyy"); 
-			htmlResponse += "<tr><td><a href=\""+listFile.get(i).getName()+"\">"+listFile.get(i).getName()+(listFile.get(i).isDirectory() ? "/" : "")+"<a></td><td>"+listFile.get(i).getUser()+"</td><td>"+format.format(listFile.get(i).getTimestamp().getTime())+"</td></tr>\n";
+			htmlResponse += "<tr>"+
+								"<td><a href=\""+information.getPath()+"/"+file.getValue().getName()+"\">"+file.getKey()+"<a></td>"+
+								"<td>"+file.getValue().getUser()+"</td>"+
+								"<td>"+(file.getValue().getTimestamp() != null ? format.format(file.getValue().getTimestamp().getTime()) : "")+"</td>"+
+							"</tr>\n";
 		}
 		
 		htmlResponse += "</table>\n";

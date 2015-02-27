@@ -43,7 +43,7 @@ public class AppConfig {
 		JAXRSServerFactoryBean factory = RuntimeDelegate.getInstance().createEndpoint(new JaxRsApiApplication(), JAXRSServerFactoryBean.class);
 		
 		List<Object> serviceBeans = new ArrayList<Object>();
-		serviceBeans.add(new rest.ftp.RestRequest());
+		serviceBeans.add(new rest.ftp.RestToFtpResource());
 		
 		factory.setServiceBeans(serviceBeans);
 		factory.setAddress("/" + factory.getAddress());
