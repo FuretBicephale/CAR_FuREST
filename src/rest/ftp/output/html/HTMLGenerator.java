@@ -1,4 +1,4 @@
-package rest.ftp;
+package rest.ftp.output.html;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.net.ftp.FTPFile;
+
+import rest.ftp.GetRestRequestInformation;
 
 /**
  * @author cachera - falez
@@ -29,7 +31,35 @@ public class HTMLGenerator {
 						"<meta charset=\"utf-8\">\n"+
 						"<title>"+information.getURI()+"</title>\n"+
 					"</head>\n"+
+					"<style>\n"+
+						"* { margin: 0px; padding: 0px }\n"+
+						"#directory-list { width: 100%; }\n"+
+						"#directory-list th { background-color: #ddd }\n"+
+					"</style>\n"+
+					"<script>\n"+
+						"function delete_file(target) {" +
+							"var httpRequest = null;\n"+
+    						"httpRequest = new XMLHttpRequest();\n"+
+							"console.log(name);\n"+
+    						"httpRequest.open('DELETE', target, false);"+
+    						"httpRequest.send(null);"+
+    						"location.reload()\n"+
+    					"}\n"+
+    					"function manage_login() {" +
+    						"var login = document.getElementByID('login');\n"+
+							
+    					"}\n"+
+					"</script>\n"+
 				"<body>\n";
+	}
+	
+	public static String generatorLogin(GetRestRequestInformation information) {
+		return "<div id=\"login\"></div>";
+	}
+	
+	
+	public static String generatorUploadForm(GetRestRequestInformation information) {
+		return "<form method=\"POST\" target=\""+information.getPath()+"/upload>"+"</form>";
 	}
 	
 	/**
@@ -41,12 +71,11 @@ public class HTMLGenerator {
 	 */
 	public static String generateFTPFileList(FTPFile[] ftpFiles, GetRestRequestInformation information) {
 		Map<String, FTPFile> listFile = new HashMap<String, FTPFile>();
-		String htmlResponse = "<table>\n"+
-								"<tr><th>Nom</th><th>Utilisateur</th><th>Derniere modification</th></tr>\n";
+		String htmlResponse = "<table id=\"directory-list\">\n"+
+								"<tr><th>Nom</th><th>Utilisateur</th><th>Derniere modification</th><th>Action</th></tr>\n";
 		
 		String[] folders;
 		folders = information.getURI().split("/");
-	
 
 		// Add parent directory link
 		if(!information.getURI().equals("")) {
@@ -56,38 +85,46 @@ public class HTMLGenerator {
 			for(int i = 0; i < folders.length-1; i++) {
 				parentDirectory += folders+"/";
 			}
-			
 			FTPFile parentEntry = new FTPFile();
 			parentEntry.setName(parentDirectory);
+			parentEntry.setType(FTPFile.DIRECTORY_TYPE);
 			
 			listFile.put("Parent Directory", parentEntry);
 		}
 		
+		String prefix = (information.getURI().equals("") ? "" : "/"+information.getURI());
+		
 		//Add directories first
 		for(int i = 0; i < ftpFiles.length; i++) {
-			if(ftpFiles[i].isDirectory())
-				listFile.put(ftpFiles[i].getName()+"/", ftpFiles[i]);	
+			if(ftpFiles[i].isDirectory()) {
+				String name = ftpFiles[i].getName();
+				ftpFiles[i].setName(prefix+(name.startsWith("/") ? name : "/"+name));
+				listFile.put(name+"/", ftpFiles[i]);	
+			}
 		}
 		
 		// Then regular files
 		for(int i = 0; i < ftpFiles.length; i++) {
-			if(!ftpFiles[i].isDirectory())
-				listFile.put(ftpFiles[i].getName(), ftpFiles[i]);	
+			if(!ftpFiles[i].isDirectory()) {
+				String name = ftpFiles[i].getName();
+				ftpFiles[i].setName(prefix+(name.startsWith("/") ? name : "/"+name));
+				listFile.put(name, ftpFiles[i]);	
+			}
 		}
 
 		
 		for(Entry<String, FTPFile> file : listFile.entrySet()) {
-
 			SimpleDateFormat format = new SimpleDateFormat("HH:mm DD MMM yyyy"); 
 			htmlResponse += "<tr>"+
-								"<td><a href=\""+information.getPath()+"/"+file.getValue().getName()+"\">"+file.getKey()+"<a></td>"+
+								"<td><a href=\""+information.getPath()+file.getValue().getName()+"\">"+file.getKey()+"<a></td>"+
 								"<td>"+file.getValue().getUser()+"</td>"+
 								"<td>"+(file.getValue().getTimestamp() != null ? format.format(file.getValue().getTimestamp().getTime()) : "")+"</td>"+
+								"<td>"+(file. getValue().isDirectory() ? "" : "<button onclick=\"delete_file('"+information.getPath()+file.getValue().getName()+"')\">Supprimer</button>")+"</td>"+
 							"</tr>\n";
 		}
 		
 		htmlResponse += "</table>\n";
-		
+
 		return htmlResponse;
 	}
 	

@@ -10,6 +10,8 @@ import javax.ws.rs.Produces;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.io.SocketOutputStream;
 
+import rest.ftp.output.html.HTMLGenerator;
+
 public class GetRestRequest {
 
 	/**
@@ -56,6 +58,7 @@ public class GetRestRequest {
 	@Produces("text/html")
 	public static byte[] getDirectory(FTPSession session, GetRestRequestInformation information) {
 		String htmlResponse = "";
+
 
 		try {
 			htmlResponse = HTMLGenerator.generateHeader(information);

@@ -2,6 +2,7 @@ package rest.ftp;
 
 import java.io.IOException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
@@ -21,22 +22,31 @@ public class FTPSession {
 	 */
 	private FTPClient ftp;
 	
+	private String address;
+	private int port;
+	
 	/**
 	 * Connect the client to the FTPServer 127.0.0.1 on port 4223
 	 * @throws SocketException
 	 * @throws IOException
 	 * @throws FTPBadAnswerException
 	 */
-	public FTPSession() throws SocketException, IOException, FTPBadAnswerException {
+	public FTPSession() {
+		this.address = "127.0.0.1";
+		this.port = 4224;
+		
+	}
+	
+	public void connect() throws SocketException, IOException, FTPBadAnswerException, SocketTimeoutException {
 		this.ftp = new FTPClient();
-		this.ftp.connect("127.0.0.1", 4223);
+		this.ftp.setDefaultTimeout(5000);
+		this.ftp.connect(this.address, this.port);
 		
 		int reply = this.ftp.getReplyCode();
 		
 		if(!FTPReply.isPositiveCompletion(reply)) {
 			throw new FTPBadAnswerException(reply);
 		}
-		
 	}
 	
 	/**
@@ -64,6 +74,14 @@ public class FTPSession {
 	
 	public FTPClient getFTPClient() {
 		return this.ftp;
+	}
+	
+	public String getAddress() {
+		return this.address;
+	}
+	
+	public int getPort() {
+		return this.port;
 	}
 	
 	/**
