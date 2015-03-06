@@ -12,6 +12,10 @@ import org.apache.commons.net.io.SocketOutputStream;
 
 import rest.ftp.output.html.HTMLGenerator;
 
+/**
+ * @author cachera - falez
+ * A class which only contains two static method used to send a GET or a RETR Request to a FTPServer
+ */
 public class GetRestRequest {
 
 	/**
