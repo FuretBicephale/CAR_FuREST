@@ -58,21 +58,17 @@ public class GetRestRequest {
 	 * @param session The session which send the LIST Request
 	 * @param information Information about the FTP Request
 	 * @return A byte array which contains HTML Code to display the directory content
+	 * @throws IOException 
 	 */
 	@Produces("text/html")
-	public static byte[] getDirectory(FTPSession session, GetRestRequestInformation information) {
+	public static byte[] getDirectory(FTPSession session, GetRestRequestInformation information) throws IOException {
 		String htmlResponse = "";
 
-
-		try {
-			htmlResponse = HTMLGenerator.generateHeader(information.getURI());
-			htmlResponse += HTMLGenerator.generateFTPFileList(session.getFTPClient().listFiles(), information);
-			htmlResponse += HTMLGenerator.generatorUploadForm(information);
-			htmlResponse += HTMLGenerator.generateFooter(information);
-		} catch (IOException e) {
-			System.err.println("Unable to connect to FTP Server.");
-		}
-
+		htmlResponse = HTMLGenerator.generateHeader(information.getURI());
+		htmlResponse += HTMLGenerator.generateFTPFileList(session.getFTPClient().listFiles(), information);
+		htmlResponse += HTMLGenerator.generatorUploadForm(information);
+		htmlResponse += HTMLGenerator.generateFooter(information);
+			
 		return htmlResponse.getBytes();
 	}
 
