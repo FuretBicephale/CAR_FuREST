@@ -10,8 +10,6 @@ import rest.ftp.output.html.HTMLErrorGenerator;
 public class DeleteRestRequest {
 	
 	public static byte[] process(String uri) {
-		
-		System.out.println("DELETE uri="+uri);
 		FTPSession session = new FTPSession();
 		byte[] result = null;
 		

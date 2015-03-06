@@ -24,12 +24,12 @@ public class HTMLGenerator {
 	 * @param information Information of the request asking this header
 	 * @return The HTML Code generated in a String
 	 */
-	public static String generateHeader(GetRestRequestInformation information) {
+	public static String generateHeader(String name) {
 		return "<!DOCTYPE html>\n"+
 				"<html lang=\"fr\">\n"+
 					"<head>\n"+
 						"<meta charset=\"utf-8\">\n"+
-						"<title>"+information.getURI()+"</title>\n"+
+						"<title>"+name+"</title>\n"+
 					"</head>\n"+
 					"<style>\n"+
 						"* { margin: 0px; padding: 0px }\n"+
@@ -38,12 +38,10 @@ public class HTMLGenerator {
 					"</style>\n"+
 					"<script>\n"+
 						"function delete_file(target) {" +
-							"var httpRequest = null;\n"+
-    						"httpRequest = new XMLHttpRequest();\n"+
-							"console.log(name);\n"+
+							"var httpRequest = new XMLHttpRequest();\n"+
     						"httpRequest.open('DELETE', target, false);"+
     						"httpRequest.send(null);"+
-    						"location.reload()\n"+
+    						"location.reload();\n"+
     					"}\n"+
     					"function manage_login() {" +
     						"var login = document.getElementByID('login');\n"+
@@ -59,7 +57,28 @@ public class HTMLGenerator {
 	
 	
 	public static String generatorUploadForm(GetRestRequestInformation information) {
-		return "<form method=\"POST\" target=\""+information.getPath()+"/upload>"+"</form>";
+		return "<input id=\"file\" type=\"file\" multiple />\n"+
+				"<script>\n"+
+				"var input = document.getElementById('file');\n" +
+				"input.addEventListener('change', function() {\n"+
+					"var ended = 0;\n"+
+					"for(var i = 0; i < input.files.length; i++) {\n" +
+						"(function (file) {\n"+ 
+							"var reader = new FileReader()\n" +
+							"reader.addEventListener('load', function() { \n"+
+								"var httpRequest = new XMLHttpRequest();\n"+
+	    						"httpRequest.open('PUT', window.location+'/'+file.name, false);"+
+	    						"httpRequest.send(reader.result);"+
+	    						"ended++;\n"+
+	    						"if(ended ==  input.files.length) {\n"+
+	    							"location.reload();\n"+
+	    						"}\n"+
+	    					"}, false);\n"+
+	    					"reader.readAsText(file);\n"+
+	    				"})(input.files[i]);\n"+
+					"}\n"+
+				"}, false)\n"+
+				"</script>\n";
 	}
 	
 	/**

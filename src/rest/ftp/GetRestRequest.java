@@ -61,8 +61,9 @@ public class GetRestRequest {
 
 
 		try {
-			htmlResponse = HTMLGenerator.generateHeader(information);
+			htmlResponse = HTMLGenerator.generateHeader(information.getURI());
 			htmlResponse += HTMLGenerator.generateFTPFileList(session.getFTPClient().listFiles(), information);
+			htmlResponse += HTMLGenerator.generatorUploadForm(information);
 			htmlResponse += HTMLGenerator.generateFooter(information);
 		} catch (IOException e) {
 			System.err.println("Unable to connect to FTP Server.");

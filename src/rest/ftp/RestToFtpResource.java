@@ -9,6 +9,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import rest.exception.FTPBadAnswerException;
 import rest.ftp.output.html.HTMLErrorGenerator;
@@ -18,7 +20,7 @@ public class RestToFtpResource {
 
 	@GET
 	@Path("{uri: .*}")
-	public byte[] processGetRequest(@PathParam("uri") String uri) {
+	public byte[] processGetRequest(@PathParam("uri") String uri, @Context UriInfo ui) {
 		
 		System.out.println("GET uri="+uri);
 		
@@ -27,7 +29,7 @@ public class RestToFtpResource {
 		
 		GetRestRequestInformation information = new GetRestRequestInformation();
 		information.setURI(uri);
-		information.setPath("/rest/api/ftp");
+		information.setPath(ui.getAbsolutePath().getPath());
 		
 		try {
 			session.connect();
@@ -64,7 +66,12 @@ public class RestToFtpResource {
 	
 	@PUT
 	@Path("{uri: .*}")
-	public byte[] processPutRequest(@PathParam("uri") String uri) {
-		return PutRestRequest.process(uri);
+	public byte[] processPutRequest(String contents, @Context UriInfo ui) {
+		String path = ui.getPath();
+		if(path.startsWith("ftp"))
+			path = path.substring(3);
+		else if(path.startsWith("/ftp"))
+			path = path.substring(4);
+		return PutRestRequest.process(path, contents);
 	}
 }
