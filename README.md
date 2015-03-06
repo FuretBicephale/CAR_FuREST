@@ -12,8 +12,6 @@ Ensuite, l'application sera accessible à l'aide d'un navigateur web en accédan
 
 Cette application propose à l'utilisateur de naviguer dans les dossiers du serveur FTP et d'en récuperer les fichiers, de les supprimer ou d'en ajouter.
 
-#### Utilisation (Il me semble que Monperrus nous avait conseillé de mettre ça à la fin du README, à confirmer)
-
 #### Architecture
 
 Cette application comprends 6 packages : rest.api, rest.config, rest.exception, rest.ftp, rest.ftp.output.html et rest.main.
@@ -26,6 +24,10 @@ Le package rest.config définie la configuration de notre application, il rassem
 
 Le package rest.exception contient toutes les exceptions propres à notre application
 
+Le package rest.ftp définie la ressource FTP de notre application ainsi que la gestion de toutes les requêtes REST envoyées vers le serveur FTP
+
+Le package rest.ftp.output.html contient des classes nous permettant de créer rapidement des pages html qui seront retournées en réponses de certaines requêtes REST.
+
 Try/catch :
 * IOException dans getDirectory()/GetRestRequest
 * Socket/SocketTimeout/IO/FTPBadAnswerException dans processGetRequest()/RestToFTPRequest, process()/DeleteRestRequest, process()/PutRestRequest
@@ -36,3 +38,5 @@ Throw :
 * IOException dans close()/FTPSession, isDirectory()/FTPSession, getDirectory()/GetRestRequest
 
 #### Code Samples
+
+#### Utilisation
