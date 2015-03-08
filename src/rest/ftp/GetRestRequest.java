@@ -16,6 +16,10 @@ import org.apache.commons.net.io.SocketOutputStream;
 import rest.ftp.output.html.HtmlGenerator;
 import rest.ftp.output.json.JsonGenerator;
 
+/**
+ * @author cachera - falez
+ * A class which only contains two static method used to send a GET or a RETR Request to a FTPServer
+ */
 public class GetRestRequest {
 
 	/**
@@ -52,12 +56,13 @@ public class GetRestRequest {
 		return buffer;
 		
 	}
-
+	
 	/**
-	 * Send a LIST Request to the FTP Server for the directory designed by session uri and return a HTML page as a byte array containing the list of the folder's files
+	 * Send a LIST Request to the FTP Server for the directory designed by session uri and return a HTML page by default or other format as a byte array containing the list of the folder's files
 	 * @param session The session which send the LIST Request
 	 * @param information Information about the FTP Request
 	 * @return A byte array which contains HTML Code to display the directory content
+	 * @throws IOException 
 	 */
 
 	public static byte[] getDirectory(FTPSession session, GetRestRequestInformation information) {
@@ -74,6 +79,12 @@ public class GetRestRequest {
 		}
 	}
 	
+	/**
+	 * Return list of files contained in a directory asked by the URI
+	 * @param ftpFiles
+	 * @param information
+	 * @return
+	 */
 	public static Map<String, FTPFile> getDirectoryList(FTPFile[] ftpFiles, GetRestRequestInformation information) {
 		Map<String, FTPFile> listFile = new HashMap<String, FTPFile>();
 		

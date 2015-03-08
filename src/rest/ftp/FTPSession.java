@@ -22,14 +22,18 @@ public class FTPSession {
 	 */
 	private FTPClient ftp;
 	
+	/**
+	 * The address of the FTPServer to connect to
+	 */
 	private String address;
+	
+	/**
+	 * The port of the FTPServer to connect to
+	 */
 	private int port;
 	
 	/**
 	 * Connect the client to the FTPServer 127.0.0.1 on port 4223
-	 * @throws SocketException
-	 * @throws IOException
-	 * @throws FTPBadAnswerException
 	 */
 	public FTPSession() {
 		this.address = "127.0.0.1";
@@ -37,6 +41,13 @@ public class FTPSession {
 		
 	}
 	
+	/**
+	 * Initialize the FTPClient and connect it to the FTPServer designed by the address and the port
+	 * @throws SocketException
+	 * @throws IOException
+	 * @throws FTPBadAnswerException
+	 * @throws SocketTimeoutException
+	 */
 	public void connect() throws SocketException, IOException, FTPBadAnswerException, SocketTimeoutException {
 		this.ftp = new FTPClient();
 		this.ftp.setDefaultTimeout(5000);
@@ -71,7 +82,7 @@ public class FTPSession {
 	public void close() throws IOException {
 		this.ftp.quit();
 	}
-	
+
 	public FTPClient getFTPClient() {
 		return this.ftp;
 	}
