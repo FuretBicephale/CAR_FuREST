@@ -13,6 +13,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import rest.exception.FTPBadAnswerException;
@@ -60,16 +61,11 @@ public class RestToFtpResource {
 						
 			session.close();
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FTPBadAnswerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch(SocketTimeoutException e) {
 			result = HtmlErrorGenerator.ftpConnectionFailed(information, session).getBytes();
+		} catch (FTPBadAnswerException e) {
+			result = HtmlErrorGenerator.ftpBadAnswer(information, session, e.getCode()).getBytes();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			result = HtmlErrorGenerator.ftpConnectionFailed(information, session).getBytes();
 		}
 		
 		return result;
@@ -101,7 +97,7 @@ public class RestToFtpResource {
 	 */
 	@DELETE
 	@Path("{uri: .*}")
-	public byte[] processDeleteRequest(@PathParam("uri") String uri, @Context UriInfo ui) {
+	public Response processDeleteRequest(@PathParam("uri") String uri, @Context UriInfo ui) {
 		RestRequestInformation information = new RestRequestInformation();
 		information.setURI(uri);
 		information.setPath("/rest/api/ftp");
@@ -119,7 +115,7 @@ public class RestToFtpResource {
 	 */
 	@PUT
 	@Path("{uri: .*}")
-	public byte[] processPutRequest(String contents, @Context UriInfo ui) {
+	public Response processPutRequest(String contents, @Context UriInfo ui) {
 		String path = ui.getPath();
 		if(path.startsWith("ftp"))
 			path = path.substring(3);

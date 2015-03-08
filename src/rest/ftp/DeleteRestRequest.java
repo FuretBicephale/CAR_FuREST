@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
+import javax.ws.rs.core.Response;
+
 import rest.exception.FTPBadAnswerException;
 import rest.ftp.output.html.HtmlErrorGenerator;
 
@@ -19,9 +21,8 @@ public class DeleteRestRequest {
 	 * @param uri The URI referring the file to delete
 	 * @return
 	 */
-	public static byte[] process(RestRequestInformation information) {
+	public static Response process(RestRequestInformation information) {
 		FTPSession session = new FTPSession();
-		byte[] result = null;
 		
 		String[] login = RestToFtpResource.getLoginInformation(information.getUriInfo());
 		
@@ -33,19 +34,14 @@ public class DeleteRestRequest {
 						
 			session.close();
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return Response.status(Response.Status.REQUEST_TIMEOUT).build();
 		} catch (FTPBadAnswerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch(SocketTimeoutException e) {
-			result = HtmlErrorGenerator.ftpConnectionFailed(information, session).getBytes();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Ftp server answer "+e.getCode()).build();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return Response.status(Response.Status.REQUEST_TIMEOUT).build();
 		}
 		
-		return result;
+		return Response.status(Response.Status.ACCEPTED).build();
 	}
 
 }

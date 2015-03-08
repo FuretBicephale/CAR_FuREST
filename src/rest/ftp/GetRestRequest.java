@@ -11,8 +11,10 @@ import javax.ws.rs.Produces;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.io.SocketOutputStream;
 
+import rest.exception.FTPBadAnswerException;
 import rest.ftp.output.html.HtmlGenerator;
 import rest.ftp.output.json.JsonGenerator;
 
@@ -27,13 +29,19 @@ public class GetRestRequest {
 	 * @param session The session which send the RETR Request
 	 * @param information Information about the FTP Request
 	 * @return A byte array containing the file if it's found, null otherwise
+	 * @throws FTPBadAnswerException 
 	 */
 	@Produces("application/octet-stream")
-	public static byte[] getFile(FTPSession session, RestRequestInformation information) throws IOException {
+	public static byte[] getFile(FTPSession session, RestRequestInformation information) throws IOException, FTPBadAnswerException {
 		int length;
 		byte[] buffer = null;
 
 		InputStream stream = session.getFTPClient().retrieveFileStream(information.getURI());
+		
+		if(FTPReply.isNegativePermanent(session.getFTPClient().getReplyCode()) || FTPReply.isNegativeTransient(session.getFTPClient().getReplyCode())) {
+			throw new FTPBadAnswerException(session.getFTPClient().getReplyCode());
+		}
+		
 		if(stream.available() == 0) {
 			buffer = new byte[0];
 		}

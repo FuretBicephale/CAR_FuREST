@@ -63,7 +63,7 @@ public class HtmlGenerator {
 	
 	public static String generatorLogin(RestRequestInformation information) {
 		String[] login = RestToFtpResource.getLoginInformation(information.getUriInfo());
-		return "Username : <input type=\"text\" id=\"username\" value=\""+login[0]+"\"/> Password : <input type=\"password\" id=\"password\" value=\""+login[1]+"\" /> <button onclick=\"open_ressource(window.location)\">Recharger</button>";
+		return "Username : <input type=\"text\" id=\"username\" value=\""+login[0]+"\"/> Password : <input type=\"password\" id=\"password\" value=\""+login[1]+"\" /> <button onclick=\"open_ressource(window.location.origin+window.location.pathname)\">Recharger</button>";
 	}
 	
 	
@@ -80,8 +80,7 @@ public class HtmlGenerator {
 								"var httpRequest = new XMLHttpRequest();\n"+
 	    						"var username = document.getElementById('username');\n"+
 	    						"var password = document.getElementById('password');\n"+
-	    						"console.log(window.location.origin+window.location.pathname+file.name+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''));"+
-	    						"httpRequest.open('PUT', window.location.origin+window.location.pathname+file.name+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''), false);"+
+	    						"httpRequest.open('PUT', window.location.origin+window.location.pathname+'/'+file.name+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''), false);"+
 	    						"httpRequest.send(reader.result);"+
 	    						"ended++;\n"+
 	    						"if(ended ==  input.files.length) {\n"+

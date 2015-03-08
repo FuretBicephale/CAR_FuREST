@@ -8,5 +8,9 @@ public class FTPBadAnswerException extends Exception {
 	public FTPBadAnswerException(int code) {
 		this.code = code;
 	}
+	
+	public int getCode() {
+		return this.code;
+	}
 
 }

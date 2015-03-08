@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
+import javax.ws.rs.core.Response;
+
 import rest.exception.FTPBadAnswerException;
 import rest.ftp.output.html.HtmlErrorGenerator;
 
@@ -22,7 +24,7 @@ public class PutRestRequest {
 	 * @param contents The contents of the new file
 	 * @return
 	 */
-	public static byte[] process(RestRequestInformation information, String contents) {
+	public static Response process(RestRequestInformation information, String contents) {
 		FTPSession session = new FTPSession();
 		
 		String[] login = RestToFtpResource.getLoginInformation(information.getUriInfo());
@@ -37,20 +39,14 @@ public class PutRestRequest {
 			session.getFTPClient().storeFile(information.getURI(), stream);
 			session.close();
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return Response.status(Response.Status.REQUEST_TIMEOUT).build();
 		} catch (FTPBadAnswerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch(SocketTimeoutException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Ftp server answer "+e.getCode()).build();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return Response.status(Response.Status.REQUEST_TIMEOUT).build();
 		}
 		
-		return null;
+		return Response.status(Response.Status.ACCEPTED).build();
 	}
 
 }
