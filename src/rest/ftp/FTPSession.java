@@ -65,8 +65,8 @@ public class FTPSession {
 	 * @throws IOException
 	 * @throws FTPBadAnswerException
 	 */
-	public void login() throws IOException, FTPBadAnswerException {
-		this.ftp.login("user", "password");
+	public void login(String username, String password) throws IOException, FTPBadAnswerException {
+		this.ftp.login(username, password);
 		
 		int reply = this.ftp.getReplyCode();
 		

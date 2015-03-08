@@ -3,6 +3,9 @@ package rest.ftp;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -35,17 +38,19 @@ public class RestToFtpResource {
 	@Path("{uri: .*}")
 	public byte[] processGetRequest(@PathParam("uri") String uri, @Context UriInfo ui) {
 		
-		FTPSession session = new FTPSession();
 		byte[] result = null;
 		
-		GetRestRequestInformation information = new GetRestRequestInformation();
+		RestRequestInformation information = new RestRequestInformation();
 		information.setURI(uri);
-		information.setPath(ui.getAbsolutePath().getPath());
+		information.setPath("/rest/api/ftp");
 		information.setUriInfo(ui);
+		
+		String[] login = getLoginInformation(ui);
+		FTPSession session = new FTPSession();
 		
 		try {
 			session.connect();
-			session.login();
+			session.login(login[0], login[1]);
 			
 			if(session.isDirectory(uri) || uri.equals("")) {
 				result = GetRestRequest.getDirectory(session, information);
@@ -71,6 +76,24 @@ public class RestToFtpResource {
 	}
 	
 	/**
+	 * Return the couple username/password with the URI information. If no information is found, return anonymous login mode
+	 * @param uri The URI information of the request.
+	 * @return
+	 */
+	public static String[] getLoginInformation(UriInfo ui) {
+		String[] login = new String[2];
+		if(ui.getQueryParameters().containsKey("username") && ui.getQueryParameters().containsKey("password")) {
+			login[0] = ui.getQueryParameters().get("username").get(0);
+			login[1] = ui.getQueryParameters().get("password").get(0);
+		}
+		else {
+			login[0] = "anonymous";
+			login[1] = "";
+		}
+		return login;
+	}
+
+	/**
 	 * Manages DELETE Request of the REST application and spreads it to the FTP Server.
 	 * It will send a RM Request to the FTPServer in order to delete the file referred by the uri
 	 * @param uri The URI of the DELETE Request. It's the path of the file to delete.
@@ -78,8 +101,12 @@ public class RestToFtpResource {
 	 */
 	@DELETE
 	@Path("{uri: .*}")
-	public byte[] processDeleteRequest(@PathParam("uri") String uri) {
-		return DeleteRestRequest.process(uri);
+	public byte[] processDeleteRequest(@PathParam("uri") String uri, @Context UriInfo ui) {
+		RestRequestInformation information = new RestRequestInformation();
+		information.setURI(uri);
+		information.setPath("/rest/api/ftp");
+		information.setUriInfo(ui);
+		return DeleteRestRequest.process(information);
 	}
 	
 	/**
@@ -98,6 +125,11 @@ public class RestToFtpResource {
 			path = path.substring(3);
 		else if(path.startsWith("/ftp"))
 			path = path.substring(4);
-		return PutRestRequest.process(path, contents);
+		
+		RestRequestInformation information = new RestRequestInformation();
+		information.setURI(path);
+		information.setUriInfo(ui);
+		
+		return PutRestRequest.process(information, contents);
 	}
 }

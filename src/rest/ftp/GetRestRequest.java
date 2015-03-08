@@ -29,7 +29,7 @@ public class GetRestRequest {
 	 * @return A byte array containing the file if it's found, null otherwise
 	 */
 	@Produces("application/octet-stream")
-	public static byte[] getFile(FTPSession session, GetRestRequestInformation information) throws IOException {
+	public static byte[] getFile(FTPSession session, RestRequestInformation information) throws IOException {
 		int length;
 		byte[] buffer = null;
 
@@ -65,7 +65,7 @@ public class GetRestRequest {
 	 * @throws IOException 
 	 */
 
-	public static byte[] getDirectory(FTPSession session, GetRestRequestInformation information) {
+	public static byte[] getDirectory(FTPSession session, RestRequestInformation information) {
 		String output = "html";
 		if(information.getUriInfo().getQueryParameters().containsKey("output")) {
 			output = information.getUriInfo().getQueryParameters().get("output").get(0);
@@ -85,7 +85,7 @@ public class GetRestRequest {
 	 * @param information
 	 * @return
 	 */
-	public static Map<String, FTPFile> getDirectoryList(FTPFile[] ftpFiles, GetRestRequestInformation information) {
+	public static Map<String, FTPFile> getDirectoryList(FTPFile[] ftpFiles, RestRequestInformation information) {
 		Map<String, FTPFile> listFile = new HashMap<String, FTPFile>();
 		
 		String[] folders;
@@ -95,10 +95,12 @@ public class GetRestRequest {
 		if(!information.getURI().equals("")) {
 			
 			//get parent directory
-			String parentDirectory = "";
+			String parentDirectory = "/";
+			
 			for(int i = 0; i < folders.length-1; i++) {
-				parentDirectory += folders+"/";
+				parentDirectory += folders[i]+"/";
 			}
+			
 			FTPFile parentEntry = new FTPFile();
 			parentEntry.setName(parentDirectory);
 			parentEntry.setType(FTPFile.DIRECTORY_TYPE);

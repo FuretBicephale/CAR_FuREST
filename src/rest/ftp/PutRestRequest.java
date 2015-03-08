@@ -22,17 +22,19 @@ public class PutRestRequest {
 	 * @param contents The contents of the new file
 	 * @return
 	 */
-	public static byte[] process(String uri, String contents) {
+	public static byte[] process(RestRequestInformation information, String contents) {
 		FTPSession session = new FTPSession();
+		
+		String[] login = RestToFtpResource.getLoginInformation(information.getUriInfo());
 		
 		try {
 			session.connect();
-			session.login();
+			session.login(login[0], login[1]);
 			
 			InputStream stream = new ByteArrayInputStream(contents.getBytes());
 
 			
-			session.getFTPClient().storeFile(uri, stream);
+			session.getFTPClient().storeFile(information.getURI(), stream);
 			session.close();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block

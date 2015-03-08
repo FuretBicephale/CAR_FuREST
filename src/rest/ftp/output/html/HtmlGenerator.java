@@ -16,7 +16,8 @@ import org.apache.commons.net.ftp.FTPFile;
 
 import rest.ftp.FTPSession;
 import rest.ftp.GetRestRequest;
-import rest.ftp.GetRestRequestInformation;
+import rest.ftp.RestRequestInformation;
+import rest.ftp.RestToFtpResource;
 
 /**
  * @author cachera - falez
@@ -40,29 +41,33 @@ public class HtmlGenerator {
 						"* { margin: 0px; padding: 0px }\n"+
 						"#directory-list { width: 100%; }\n"+
 						"#directory-list th { background-color: #ddd }\n"+
+						".link { color: #E68A2E}\n"+
 					"</style>\n"+
 					"<script>\n"+
-					"console.log(document.cookie);\n"+
 						"function delete_file(target) {" +
 							"var httpRequest = new XMLHttpRequest();\n"+
-    						"httpRequest.open('DELETE', target, false);"+
+    						"var username = document.getElementById('username');\n"+
+    						"var password = document.getElementById('password');\n"+
+    						"httpRequest.open('DELETE', target+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''), false);"+
     						"httpRequest.send(null);"+
     						"location.reload();\n"+
     					"}\n"+
-    					"function manage_login() {" +
-    						"var login = document.getElementByID('login');\n"+
-							
+    					"function open_ressource(path) {\n" +
+    						"var username = document.getElementById('username');\n"+
+    						"var password = document.getElementById('password');\n"+
+    					 	"location.assign(path+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''));\n"+
     					"}\n"+
 					"</script>\n"+
 				"<body>\n";
 	}
 	
-	public static String generatorLogin(GetRestRequestInformation information) {
-		return "<div id=\"login\"></div>";
+	public static String generatorLogin(RestRequestInformation information) {
+		String[] login = RestToFtpResource.getLoginInformation(information.getUriInfo());
+		return "Username : <input type=\"text\" id=\"username\" value=\""+login[0]+"\"/> Password : <input type=\"password\" id=\"password\" value=\""+login[1]+"\" /> <button onclick=\"open_ressource(window.location)\">Recharger</button>";
 	}
 	
 	
-	public static String generatorUploadForm(GetRestRequestInformation information) {
+	public static String generatorUploadForm(RestRequestInformation information) {
 		return "<input id=\"file\" type=\"file\" multiple />\n"+
 				"<script>\n"+
 				"var input = document.getElementById('file');\n" +
@@ -73,7 +78,10 @@ public class HtmlGenerator {
 							"var reader = new FileReader()\n" +
 							"reader.addEventListener('load', function() { \n"+
 								"var httpRequest = new XMLHttpRequest();\n"+
-	    						"httpRequest.open('PUT', window.location+'/'+file.name, false);"+
+	    						"var username = document.getElementById('username');\n"+
+	    						"var password = document.getElementById('password');\n"+
+	    						"console.log(window.location.origin+window.location.pathname+file.name+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''));"+
+	    						"httpRequest.open('PUT', window.location.origin+window.location.pathname+file.name+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''), false);"+
 	    						"httpRequest.send(reader.result);"+
 	    						"ended++;\n"+
 	    						"if(ended ==  input.files.length) {\n"+
@@ -94,7 +102,7 @@ public class HtmlGenerator {
 	 * @param information Information of the request asking this list
 	 * @return The HTML Code generated in a String
 	 */
-	public static String generateFTPFileList(FTPFile[] ftpFiles, GetRestRequestInformation information) {
+	public static String generateFTPFileList(FTPFile[] ftpFiles, RestRequestInformation information) {
 		
 		String htmlResponse = "<table id=\"directory-list\">\n"+
 				"<tr><th>Nom</th><th>Utilisateur</th><th>Derniere modification</th><th>Action</th></tr>\n";
@@ -104,7 +112,7 @@ public class HtmlGenerator {
 		for(Entry<String, FTPFile> file : list.entrySet()) {
 			SimpleDateFormat format = new SimpleDateFormat("HH:mm DD MMM yyyy"); 
 			htmlResponse += "<tr>"+
-								"<td><a href=\""+information.getPath()+file.getValue().getName()+"\">"+file.getKey()+"<a></td>"+
+								"<td><a class=\"link\" onclick=\"open_ressource('"+information.getPath()+file.getValue().getName()+"')\">"+file.getKey()+"<a></td>"+
 								"<td>"+file.getValue().getUser()+"</td>"+
 								"<td>"+(file.getValue().getTimestamp() != null ? format.format(file.getValue().getTimestamp().getTime()) : "")+"</td>"+
 								"<td>"+(file. getValue().isDirectory() ? "" : "<button onclick=\"delete_file('"+information.getPath()+file.getValue().getName()+"')\">Supprimer</button>")+"</td>"+
@@ -121,16 +129,17 @@ public class HtmlGenerator {
 	 * @param information  Information of the request asking this footer
 	 * @return The HTML Code generated in a String
 	 */
-	public static String generateFooter(GetRestRequestInformation information) {
+	public static String generateFooter(RestRequestInformation information) {
 		return "</body></html>";
 	}
 
 	@Produces("text/html")
-	public static String generateDirectory(FTPSession session, GetRestRequestInformation information) {
+	public static String generateDirectory(FTPSession session, RestRequestInformation information) {
 		String htmlResponse = "";
 
 		try {
 			htmlResponse = HtmlGenerator.generateHeader(information.getURI());
+			htmlResponse += HtmlGenerator.generatorLogin(information);
 			htmlResponse += HtmlGenerator.generateFTPFileList(session.getFTPClient().listFiles(), information);
 			htmlResponse += HtmlGenerator.generatorUploadForm(information);
 			htmlResponse += HtmlGenerator.generateFooter(information);

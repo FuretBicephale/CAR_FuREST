@@ -11,12 +11,12 @@ import org.apache.commons.net.ftp.FTPFile;
 
 import rest.ftp.FTPSession;
 import rest.ftp.GetRestRequest;
-import rest.ftp.GetRestRequestInformation;
+import rest.ftp.RestRequestInformation;
 
 public class JsonGenerator {
 
 	@Produces("application/json")
-	public static String generateDirectory(FTPSession session, GetRestRequestInformation information) {
+	public static String generateDirectory(FTPSession session, RestRequestInformation information) {
 		String response = "";
 
 		try {
@@ -27,7 +27,7 @@ public class JsonGenerator {
 		return response;
 	}
 
-	private static String generateFTPFileList(FTPFile[] listFiles,GetRestRequestInformation information) {
+	private static String generateFTPFileList(FTPFile[] listFiles,RestRequestInformation information) {
 		Map<String, FTPFile> list = GetRestRequest.getDirectoryList(listFiles, information);
 		
 		String reponse = "[\n";

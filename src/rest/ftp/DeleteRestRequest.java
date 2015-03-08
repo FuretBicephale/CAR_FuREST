@@ -19,19 +19,17 @@ public class DeleteRestRequest {
 	 * @param uri The URI referring the file to delete
 	 * @return
 	 */
-	public static byte[] process(String uri) {
+	public static byte[] process(RestRequestInformation information) {
 		FTPSession session = new FTPSession();
 		byte[] result = null;
 		
-		GetRestRequestInformation information = new GetRestRequestInformation();
-		information.setURI(uri);
-		information.setPath("/rest/api/ftp");
+		String[] login = RestToFtpResource.getLoginInformation(information.getUriInfo());
 		
 		try {
 			session.connect();
-			session.login();
+			session.login(login[0], login[1]);
 			
-			session.getFTPClient().deleteFile(uri);
+			session.getFTPClient().deleteFile(information.getURI());
 						
 			session.close();
 		} catch (SocketException e) {
