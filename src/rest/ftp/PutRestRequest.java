@@ -7,7 +7,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 import rest.exception.FTPBadAnswerException;
-import rest.ftp.output.html.HTMLErrorGenerator;
+import rest.ftp.output.html.HtmlErrorGenerator;
 
 public class PutRestRequest {
 	

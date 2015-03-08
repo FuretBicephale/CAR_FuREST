@@ -5,7 +5,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 import rest.exception.FTPBadAnswerException;
-import rest.ftp.output.html.HTMLErrorGenerator;
+import rest.ftp.output.html.HtmlErrorGenerator;
 
 public class DeleteRestRequest {
 	
@@ -31,7 +31,7 @@ public class DeleteRestRequest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch(SocketTimeoutException e) {
-			result = HTMLErrorGenerator.ftpConnectionFailed(information, session).getBytes();
+			result = HtmlErrorGenerator.ftpConnectionFailed(information, session).getBytes();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

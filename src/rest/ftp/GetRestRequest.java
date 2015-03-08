@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Produces;
 
 import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.io.SocketOutputStream;
 
-import rest.ftp.output.html.HTMLGenerator;
+import rest.ftp.output.html.HtmlGenerator;
+import rest.ftp.output.json.JsonGenerator;
 
 public class GetRestRequest {
 
@@ -55,21 +59,63 @@ public class GetRestRequest {
 	 * @param information Information about the FTP Request
 	 * @return A byte array which contains HTML Code to display the directory content
 	 */
-	@Produces("text/html")
+
 	public static byte[] getDirectory(FTPSession session, GetRestRequestInformation information) {
-		String htmlResponse = "";
-
-
-		try {
-			htmlResponse = HTMLGenerator.generateHeader(information.getURI());
-			htmlResponse += HTMLGenerator.generateFTPFileList(session.getFTPClient().listFiles(), information);
-			htmlResponse += HTMLGenerator.generatorUploadForm(information);
-			htmlResponse += HTMLGenerator.generateFooter(information);
-		} catch (IOException e) {
-			System.err.println("Unable to connect to FTP Server.");
+		String output = "html";
+		if(information.getUriInfo().getQueryParameters().containsKey("output")) {
+			output = information.getUriInfo().getQueryParameters().get("output").get(0);
 		}
+		
+		if(output.equals("json")) {
+			return JsonGenerator.generateDirectory(session, information).getBytes();
+		}
+		else {
+			return HtmlGenerator.generateDirectory(session, information).getBytes();
+		}
+	}
+	
+	public static Map<String, FTPFile> getDirectoryList(FTPFile[] ftpFiles, GetRestRequestInformation information) {
+		Map<String, FTPFile> listFile = new HashMap<String, FTPFile>();
+		
+		String[] folders;
+		folders = information.getURI().split("/");
 
-		return htmlResponse.getBytes();
+		// Add parent directory link
+		if(!information.getURI().equals("")) {
+			
+			//get parent directory
+			String parentDirectory = "";
+			for(int i = 0; i < folders.length-1; i++) {
+				parentDirectory += folders+"/";
+			}
+			FTPFile parentEntry = new FTPFile();
+			parentEntry.setName(parentDirectory);
+			parentEntry.setType(FTPFile.DIRECTORY_TYPE);
+			
+			listFile.put("Parent Directory", parentEntry);
+		}
+		
+		String prefix = (information.getURI().equals("") ? "" : "/"+information.getURI());
+		
+		//Add directories first
+		for(int i = 0; i < ftpFiles.length; i++) {
+			if(ftpFiles[i].isDirectory()) {
+				String name = ftpFiles[i].getName();
+				ftpFiles[i].setName(prefix+(name.startsWith("/") ? name : "/"+name));
+				listFile.put(name+"/", ftpFiles[i]);	
+			}
+		}
+		
+		// Then regular files
+		for(int i = 0; i < ftpFiles.length; i++) {
+			if(!ftpFiles[i].isDirectory()) {
+				String name = ftpFiles[i].getName();
+				ftpFiles[i].setName(prefix+(name.startsWith("/") ? name : "/"+name));
+				listFile.put(name, ftpFiles[i]);	
+			}
+		}
+		
+		return listFile;
 	}
 
 }

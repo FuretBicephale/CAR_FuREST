@@ -1,5 +1,6 @@
 package rest.ftp.output.html;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,15 +10,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.ws.rs.Produces;
+
 import org.apache.commons.net.ftp.FTPFile;
 
+import rest.ftp.FTPSession;
+import rest.ftp.GetRestRequest;
 import rest.ftp.GetRestRequestInformation;
 
 /**
  * @author cachera - falez
  * Static class which generate strings containing HTML code. 
  */
-public class HTMLGenerator {
+public class HtmlGenerator {
 	
 	/**
 	 * Generate a HTML header with utf-8 encoding and information's URI as title.
@@ -37,6 +42,7 @@ public class HTMLGenerator {
 						"#directory-list th { background-color: #ddd }\n"+
 					"</style>\n"+
 					"<script>\n"+
+					"console.log(document.cookie);\n"+
 						"function delete_file(target) {" +
 							"var httpRequest = new XMLHttpRequest();\n"+
     						"httpRequest.open('DELETE', target, false);"+
@@ -89,50 +95,13 @@ public class HTMLGenerator {
 	 * @return The HTML Code generated in a String
 	 */
 	public static String generateFTPFileList(FTPFile[] ftpFiles, GetRestRequestInformation information) {
-		Map<String, FTPFile> listFile = new HashMap<String, FTPFile>();
+		
 		String htmlResponse = "<table id=\"directory-list\">\n"+
-								"<tr><th>Nom</th><th>Utilisateur</th><th>Derniere modification</th><th>Action</th></tr>\n";
-		
-		String[] folders;
-		folders = information.getURI().split("/");
+				"<tr><th>Nom</th><th>Utilisateur</th><th>Derniere modification</th><th>Action</th></tr>\n";
 
-		// Add parent directory link
-		if(!information.getURI().equals("")) {
-			
-			//get parent directory
-			String parentDirectory = "";
-			for(int i = 0; i < folders.length-1; i++) {
-				parentDirectory += folders+"/";
-			}
-			FTPFile parentEntry = new FTPFile();
-			parentEntry.setName(parentDirectory);
-			parentEntry.setType(FTPFile.DIRECTORY_TYPE);
-			
-			listFile.put("Parent Directory", parentEntry);
-		}
+		Map<String, FTPFile> list = GetRestRequest.getDirectoryList(ftpFiles, information);
 		
-		String prefix = (information.getURI().equals("") ? "" : "/"+information.getURI());
-		
-		//Add directories first
-		for(int i = 0; i < ftpFiles.length; i++) {
-			if(ftpFiles[i].isDirectory()) {
-				String name = ftpFiles[i].getName();
-				ftpFiles[i].setName(prefix+(name.startsWith("/") ? name : "/"+name));
-				listFile.put(name+"/", ftpFiles[i]);	
-			}
-		}
-		
-		// Then regular files
-		for(int i = 0; i < ftpFiles.length; i++) {
-			if(!ftpFiles[i].isDirectory()) {
-				String name = ftpFiles[i].getName();
-				ftpFiles[i].setName(prefix+(name.startsWith("/") ? name : "/"+name));
-				listFile.put(name, ftpFiles[i]);	
-			}
-		}
-
-		
-		for(Entry<String, FTPFile> file : listFile.entrySet()) {
+		for(Entry<String, FTPFile> file : list.entrySet()) {
 			SimpleDateFormat format = new SimpleDateFormat("HH:mm DD MMM yyyy"); 
 			htmlResponse += "<tr>"+
 								"<td><a href=\""+information.getPath()+file.getValue().getName()+"\">"+file.getKey()+"<a></td>"+
@@ -154,6 +123,21 @@ public class HTMLGenerator {
 	 */
 	public static String generateFooter(GetRestRequestInformation information) {
 		return "</body></html>";
+	}
+
+	@Produces("text/html")
+	public static String generateDirectory(FTPSession session, GetRestRequestInformation information) {
+		String htmlResponse = "";
+
+		try {
+			htmlResponse = HtmlGenerator.generateHeader(information.getURI());
+			htmlResponse += HtmlGenerator.generateFTPFileList(session.getFTPClient().listFiles(), information);
+			htmlResponse += HtmlGenerator.generatorUploadForm(information);
+			htmlResponse += HtmlGenerator.generateFooter(information);
+		} catch (IOException e) {
+			htmlResponse = HtmlErrorGenerator.ftpConnectionFailed(information, session);
+		}
+		return htmlResponse;
 	}
 
 }

@@ -2,10 +2,13 @@ package rest.ftp;
 
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.UriInfo;
+
 public class GetRestRequestInformation {
 	
 	private String uri;
 	private String path;
+	private UriInfo uriInfo;
 	
 	public GetRestRequestInformation() {
 		
@@ -21,6 +24,14 @@ public class GetRestRequestInformation {
 	
 	public void setPath(String path) {
 		this.path = path;
+	}
+	
+	public void setUriInfo(UriInfo info) {
+		this.uriInfo = info;
+	}
+	
+	public UriInfo getUriInfo() {
+		return this.uriInfo;
 	}
 	
 	public String getCompleteURI() {

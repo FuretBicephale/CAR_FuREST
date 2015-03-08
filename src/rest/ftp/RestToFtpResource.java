@@ -13,7 +13,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
 import rest.exception.FTPBadAnswerException;
-import rest.ftp.output.html.HTMLErrorGenerator;
+import rest.ftp.output.html.HtmlErrorGenerator;
 
 @Path("/ftp")
 public class RestToFtpResource {
@@ -22,14 +22,13 @@ public class RestToFtpResource {
 	@Path("{uri: .*}")
 	public byte[] processGetRequest(@PathParam("uri") String uri, @Context UriInfo ui) {
 		
-		System.out.println("GET uri="+uri);
-		
 		FTPSession session = new FTPSession();
 		byte[] result = null;
 		
 		GetRestRequestInformation information = new GetRestRequestInformation();
 		information.setURI(uri);
 		information.setPath(ui.getAbsolutePath().getPath());
+		information.setUriInfo(ui);
 		
 		try {
 			session.connect();
@@ -49,7 +48,7 @@ public class RestToFtpResource {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch(SocketTimeoutException e) {
-			result = HTMLErrorGenerator.ftpConnectionFailed(information, session).getBytes();
+			result = HtmlErrorGenerator.ftpConnectionFailed(information, session).getBytes();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
