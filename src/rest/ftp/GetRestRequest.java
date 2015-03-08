@@ -2,17 +2,13 @@ package rest.ftp;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.ws.rs.Produces;
 
-import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.commons.net.io.SocketOutputStream;
 
 import rest.exception.FTPBadAnswerException;
 import rest.ftp.output.html.HtmlGenerator;
@@ -72,7 +68,6 @@ public class GetRestRequest {
 	 * @return A byte array which contains HTML Code to display the directory content
 	 * @throws IOException 
 	 */
-
 	public static byte[] getDirectory(FTPSession session, RestRequestInformation information) {
 		String output = "html";
 		if(information.getUriInfo().getQueryParameters().containsKey("output")) {
@@ -88,13 +83,14 @@ public class GetRestRequest {
 	}
 	
 	/**
-	 * Return list of files contained in a directory asked by the URI
-	 * @param ftpFiles
-	 * @param information
-	 * @return
+	 * Return an ordered list of files contained in a directory asked by the URI.
+	 * The first file is the equivalent of "..", the followings are the folders and it finish with the regular files.
+	 * @param ftpFiles The list of files to order and return
+	 * @param information Information about the request asking the files
+	 * @return An ordered map containing the asked files
 	 */
 	public static Map<String, FTPFile> getDirectoryList(FTPFile[] ftpFiles, RestRequestInformation information) {
-		Map<String, FTPFile> listFile = new HashMap<String, FTPFile>();
+		Map<String, FTPFile> listFile = new LinkedHashMap<String, FTPFile>();
 		
 		String[] folders;
 		folders = information.getURI().split("/");
