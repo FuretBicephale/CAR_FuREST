@@ -1,38 +1,38 @@
 package test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import rest.ftp.FTPSession;
-
 public class RestTest {
-
-	private FTPSession session;
+		
+	@Test
+	public void testRootGetRequest() throws IOException {
+		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp?username=user_test&password=user_test_password");
+        BufferedReader in = new BufferedReader(
+        		new InputStreamReader(requestUrl.openStream()));
+	}
 	
-	@Before
-	public void setUp() {
-		session = new FTPSession();
-		try {
-			session.login("user_test", "user_test_password");
-			session.connect();
-		} catch (Exception e) {
-			Assert.fail("Test failed : " + e.getMessage());
-		}
+	@Test
+	public void testFolderGetRequest() throws IOException {
+		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp/TestFolder?username=user_test&password=user_test_password");
+        BufferedReader in = new BufferedReader(
+        		new InputStreamReader(requestUrl.openStream()));
 	}
 
-	@After
-	public void tearDown() {
-		try {
-			session.close();
-		} catch (IOException e) {
-			Assert.fail("Test failed : " + e.getMessage());
-		}
+	@Test
+	public void testFileGetRequest() throws IOException {
+		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp/toto?username=user_test&password=user_test_password");
+        BufferedReader in = new BufferedReader(
+        		new InputStreamReader(requestUrl.openStream()));
+        String inputLine = in.readLine();
+        in.close();
+        assertEquals("TOTO", inputLine);
 	}
 
 }
