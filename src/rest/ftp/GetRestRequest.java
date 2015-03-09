@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.ws.rs.Produces;
 
@@ -115,23 +116,27 @@ public class GetRestRequest {
 		String prefix = (information.getURI().equals("") ? "" : "/"+information.getURI());
 		
 		//Add directories first
+		Map<String, FTPFile> alphaSortedListDir = new TreeMap<String, FTPFile>();
 		for(int i = 0; i < ftpFiles.length; i++) {
 			if(ftpFiles[i].isDirectory()) {
 				String name = ftpFiles[i].getName();
 				ftpFiles[i].setName(prefix+(name.startsWith("/") ? name : "/"+name));
-				listFile.put(name+"/", ftpFiles[i]);	
+				alphaSortedListDir.put(name+"/", ftpFiles[i]);	
 			}
 		}
 		
 		// Then regular files
+		Map<String, FTPFile> alphaSortedListFiles = new TreeMap<String, FTPFile>();
 		for(int i = 0; i < ftpFiles.length; i++) {
 			if(!ftpFiles[i].isDirectory()) {
 				String name = ftpFiles[i].getName();
 				ftpFiles[i].setName(prefix+(name.startsWith("/") ? name : "/"+name));
-				listFile.put(name, ftpFiles[i]);	
+				alphaSortedListFiles.put(name, ftpFiles[i]);	
 			}
 		}
 		
+		listFile.putAll(alphaSortedListDir);
+		listFile.putAll(alphaSortedListFiles);
 		return listFile;
 	}
 
