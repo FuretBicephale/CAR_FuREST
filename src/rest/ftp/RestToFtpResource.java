@@ -74,7 +74,7 @@ public class RestToFtpResource {
 	/**
 	 * Return the couple username/password with the URI information. If no information is found, return anonymous login mode
 	 * @param uri The URI information of the request.
-	 * @return
+	 * @return A String array containing the username and the password of the login
 	 */
 	public static String[] getLoginInformation(UriInfo ui) {
 		String[] login = new String[2];
@@ -93,7 +93,7 @@ public class RestToFtpResource {
 	 * Manages DELETE Request of the REST application and spreads it to the FTP Server.
 	 * It will send a RM Request to the FTPServer in order to delete the file referred by the uri
 	 * @param uri The URI of the DELETE Request. It's the path of the file to delete.
-	 * @return
+	 * @return A Response object containing informations about the FTP Server response
 	 */
 	@DELETE
 	@Path("{uri: .*}")
@@ -111,7 +111,7 @@ public class RestToFtpResource {
 	 * The file will be referred by the uri.
 	 * @param contents The content of the file to add.
 	 * @param ui Some basics information about the URI.
-	 * @return
+	 * @return A Response object containing informations about the FTP Server response
 	 */
 	@PUT
 	@Path("{uri: .*}")

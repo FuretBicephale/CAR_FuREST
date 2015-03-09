@@ -19,7 +19,7 @@ public class DeleteRestRequest {
 	 * Sends a RM Request to the FTPServer. 
 	 * It will ask to delete the file referred by the uri 
 	 * @param uri The URI referring the file to delete
-	 * @return
+	 * @return A Response object containing informations about the FTP Server response
 	 */
 	public static Response process(RestRequestInformation information) {
 		FTPSession session = new FTPSession();

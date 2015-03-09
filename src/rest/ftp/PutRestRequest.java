@@ -22,7 +22,7 @@ public class PutRestRequest {
 	 * It will ask to add a new file to the path uri which will contain contents
 	 * @param uri The URI referring the path of the new file
 	 * @param contents The contents of the new file
-	 * @return
+	 * @return A Response object containing informations about the FTP Server response
 	 */
 	public static Response process(RestRequestInformation information, String contents) {
 		FTPSession session = new FTPSession();

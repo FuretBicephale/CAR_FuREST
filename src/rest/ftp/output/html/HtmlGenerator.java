@@ -26,8 +26,8 @@ import rest.ftp.RestToFtpResource;
 public class HtmlGenerator {
 	
 	/**
-	 * Generate a HTML header with utf-8 encoding and information's URI as title.
-	 * @param information Information of the request asking this header
+	 * Generate a HTML header with utf-8 encoding.
+	 * @param name The title of the page
 	 * @return The HTML Code generated in a String
 	 */
 	public static String generateHeader(String name) {

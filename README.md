@@ -14,7 +14,7 @@ Cette application propose à l'utilisateur de naviguer dans les dossiers du serv
 
 #### Architecture
 
-Cette application comprends 6 packages : rest.api, rest.config, rest.exception, rest.ftp, rest.ftp.output.html et rest.main.
+Cette application comprends 7 packages : rest.api, rest.config, rest.exception, rest.ftp, rest.ftp.output.html, rest.ftp.output.json et rest.main.
 
 Le package rest.main contient la méthode main de notre application qui lance notre passerelle ainsi que les ressources proposées par cette dernière.
 
@@ -26,11 +26,12 @@ Le package rest.exception contient toutes les exceptions propres à notre applic
 
 Le package rest.ftp définie la ressource FTP de notre application ainsi que la gestion de toutes les requêtes REST envoyées vers le serveur FTP
 
-Le package rest.ftp.output.html contient des classes nous permettant de créer rapidement des pages html qui seront retournées en réponses de certaines requêtes REST.
+Les package rest.ftp.output.html et rest.ftp.output.json contiennent des classes nous permettant de créer rapidement des pages html (rest.ftp.output.html) ou json (rest.ftp.output.json) qui seront retournées en réponses de certaines requêtes REST.
 
 Try/catch :
-* IOException dans getDirectory()/GetRestRequest
-* Socket/SocketTimeout/IO/FTPBadAnswerException dans processGetRequest()/RestToFTPRequest, process()/DeleteRestRequest, process()/PutRestRequest
+* Exception dans main()/Main
+* IOException dans generateDirectory()/HtmlGenerator
+* Socket/IO/FTPBadAnswerException dans processGetRequest()/RestToFTPRequest, process()/DeleteRestRequest, process()/PutRestRequest
 
 Throw :
 * Socket/SocketTimeout/IO/FTPBadAnswerException dans connect()/FTPSession
