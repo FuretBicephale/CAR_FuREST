@@ -61,12 +61,21 @@ public class HtmlGenerator {
 				"<body>\n";
 	}
 	
+	/**
+	 * General HTML Code as a String which creates a login form
+	 * @param information Information about the request which is asking the form
+	 * @return The generated HTML Code as a String
+	 */
 	public static String generatorLogin(RestRequestInformation information) {
 		String[] login = RestToFtpResource.getLoginInformation(information.getUriInfo());
 		return "Username : <input type=\"text\" id=\"username\" value=\""+login[0]+"\"/> Password : <input type=\"password\" id=\"password\" value=\""+login[1]+"\" /> <button onclick=\"open_ressource(window.location.origin+window.location.pathname)\">Recharger</button>";
 	}
 	
-	
+	/**
+	 * General HTML Code as a String which creates a file upload form
+	 * @param information Information about the request which is asking the form
+	 * @return The generated HTML Code as a String
+	 */
 	public static String generatorUploadForm(RestRequestInformation information) {
 		return "<input id=\"file\" type=\"file\" multiple />\n"+
 				"<script>\n"+
@@ -132,6 +141,12 @@ public class HtmlGenerator {
 		return "</body></html>";
 	}
 
+	/**
+	 * Generate HTML Code as a String which creates an entire page which print the content of a directory
+	 * @param session The session which is sending the request
+	 * @param information Information about the request asking this code
+	 * @return The generated HTML Code as a String
+	 */
 	@Produces("text/html")
 	public static String generateDirectory(FTPSession session, RestRequestInformation information) {
 		String htmlResponse = "";
