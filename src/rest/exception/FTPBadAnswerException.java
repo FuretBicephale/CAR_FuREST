@@ -1,8 +1,8 @@
 package rest.exception;
 
 /**
- * @author cachera - falez
  * Exception throwed when the FTP Server return an error
+ * @author cachera - falez
  */
 public class FTPBadAnswerException extends Exception {
 

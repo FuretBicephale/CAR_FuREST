@@ -10,10 +10,10 @@ import org.apache.commons.net.ftp.FTPReply;
 import rest.exception.FTPBadAnswerException;
 
 /**
- * @author cachera - falez
  * A connexion between a Client and a FTPServer.
  * Used to connect a client to the FTPServer when the user uses the resource FTPResource.
  * The FTPServer is the server on the address 127.0.0.1 on port 4223.
+ * @author cachera - falez
  */ 
 public class FTPSession {
 	

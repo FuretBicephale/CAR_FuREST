@@ -20,8 +20,8 @@ import rest.ftp.RestRequestInformation;
 import rest.ftp.RestToFtpResource;
 
 /**
- * @author cachera - falez
  * Static class which generate strings containing HTML code. 
+ * @author cachera - falez
  */
 public class HtmlGenerator {
 	

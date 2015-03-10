@@ -20,9 +20,9 @@ import rest.exception.FTPBadAnswerException;
 import rest.ftp.output.html.HtmlErrorGenerator;
 
 /**
- * @author cachera - falez
  * A REST Application Resource which access to a FTP Server. It defines Resource pathname and contents.
  * The Resource is accessible at apiAddress/ftp with apiAddress the Application address.
+ * @author cachera - falez
  */
 @Path("/ftp")
 public class RestToFtpResource {

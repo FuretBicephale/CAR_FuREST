@@ -16,8 +16,8 @@ import rest.ftp.output.html.HtmlGenerator;
 import rest.ftp.output.json.JsonGenerator;
 
 /**
- * @author cachera - falez
  * A class which only contains two static method used to send a GET or a RETR Request to a FTPServer
+ * @author cachera - falez
  */
 public class GetRestRequest {
 

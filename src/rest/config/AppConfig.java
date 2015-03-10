@@ -17,9 +17,9 @@ import org.springframework.context.annotation.DependsOn;
 import rest.api.JaxRsApiApplication;
 
 /**
- * @author cachera - falez
  * A REST Application configuration launched in a REST Server.
  * The application is accessible at serverAddress/api with serverAddress the server address.
+ * @author cachera - falez
  */
 @Configuration
 public class AppConfig {	

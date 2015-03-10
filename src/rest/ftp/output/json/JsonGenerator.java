@@ -14,8 +14,8 @@ import rest.ftp.GetRestRequest;
 import rest.ftp.RestRequestInformation;
 
 /**
- * @author cachera - falez
  * Static class which generate strings containing JSON code. 
+ * @author cachera - falez
  */
 public class JsonGenerator {
 

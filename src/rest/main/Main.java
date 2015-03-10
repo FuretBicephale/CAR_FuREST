@@ -10,8 +10,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import rest.config.AppConfig;
 
 /**
- * @author cachera - falez
  * Launches a REST server listening on port 8080.
+ * @author cachera - falez
  */
 public class Main {
 

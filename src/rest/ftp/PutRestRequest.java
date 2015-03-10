@@ -12,8 +12,8 @@ import rest.exception.FTPBadAnswerException;
 import rest.ftp.output.html.HtmlErrorGenerator;
 
 /**
- * @author cachera - falez
  * A class which only contains a static method used to send a STORE Request to a FTPServer
+ * @author cachera - falez
  */
 public class PutRestRequest {
 	

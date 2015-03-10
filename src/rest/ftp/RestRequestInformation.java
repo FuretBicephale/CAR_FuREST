@@ -2,9 +2,9 @@ package rest.ftp;
 
 import javax.ws.rs.core.UriInfo;
 /**
- * @author cachera - falez
  * Contains informations about a GET Request of our REST Application.
  * It contains the URI of the Request and the complete path of the file referred by the uri
+ * @author cachera - falez
  */
 public class RestRequestInformation {
 	

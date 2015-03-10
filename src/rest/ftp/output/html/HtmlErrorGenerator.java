@@ -6,8 +6,8 @@ import rest.ftp.FTPSession;
 import rest.ftp.RestRequestInformation;
 
 /**
- * @author cachera - falez
  * Static class which generate strings containing HTML code for error page. 
+ * @author cachera - falez
  */
 public class HtmlErrorGenerator {
 	
