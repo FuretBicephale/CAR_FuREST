@@ -11,13 +11,13 @@ import rest.config.AppConfig;
 
 /**
  * @author cachera - falez
- * Launches a REST server listening on port 2342.
+ * Launches a REST server listening on port 8080.
  */
 public class Main {
 
 	/**
-	 * Creates and launches a REST server listening on port 2342.
-	 * The server is accessible at ipAddress:2342/rest with ipAddress the server IP.
+	 * Creates and launches a REST server listening on port 8080.
+	 * The server is accessible at ipAddress:8080/rest with ipAddress the server IP.
 	 */
 	public static void main(final String[] args) {
 		

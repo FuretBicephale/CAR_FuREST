@@ -6,7 +6,7 @@
 
 Cette application est une passerelle de communication respectant les normes REST permettant d'accéder à un serveur FTP.
 
-Pour faire fonctionner l'application, il est necessaire d'avoir un serveur FTP fonctionnel, qui est par defaut, à l'adresse 127.0.0.1 et sur le port 4223.
+Pour faire fonctionner l'application, il est necessaire d'avoir un serveur FTP fonctionnel, qui est par defaut, à l'adresse 127.0.0.1 et sur le port 4224.
 
 Ensuite, l'application sera accessible à l'aide d'un navigateur web en accédant à l'adresse adresseIP:8080/rest/api/ftp avec adresseIP l'adresse IP de la passerelle REST.
 
