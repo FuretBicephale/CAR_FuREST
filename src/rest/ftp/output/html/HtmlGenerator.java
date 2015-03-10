@@ -77,30 +77,55 @@ public class HtmlGenerator {
 	 * @return The generated HTML Code as a String
 	 */
 	public static String generatorUploadForm(RestRequestInformation information) {
-		return "<input id=\"file\" type=\"file\" multiple />\n"+
-				"<script>\n"+
-				"var input = document.getElementById('file');\n" +
-				"input.addEventListener('change', function() {\n"+
-					"var ended = 0;\n"+
-					"for(var i = 0; i < input.files.length; i++) {\n" +
-						"(function (file) {\n"+ 
-							"var reader = new FileReader()\n" +
-							"reader.addEventListener('load', function() { \n"+
-								"var httpRequest = new XMLHttpRequest();\n"+
-	    						"var username = document.getElementById('username');\n"+
-	    						"var password = document.getElementById('password');\n"+
-	    						"httpRequest.open('PUT', window.location.origin+window.location.pathname+'/'+file.name+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''), false);"+
-	    						"httpRequest.send(reader.result);"+
-	    						"ended++;\n"+
-	    						"if(ended ==  input.files.length) {\n"+
-	    							"location.reload();\n"+
-	    						"}\n"+
-	    					"}, false);\n"+
-	    					"reader.readAsText(file);\n"+
-	    				"})(input.files[i]);\n"+
-					"}\n"+
-				"}, false)\n"+
-				"</script>\n";
+		
+		return "<div id=\"file-area\" style=\"width: 100%; padding-top: 50px; padding-bottom: 50px; text-align: center; border: 2px dashed #ddd\">Ajouter un fichier</div>\n"+
+		"<script>\n"+
+		"var input = document.getElementById('file-area');\n" +
+		
+		"input.addEventListener('dragenter', function() {\n"+
+			"input.style.borderColor = '#d00';\n" +
+		"}, false);\n"+
+			
+		"input.addEventListener('dragover', function(e) {\n"+
+	   		"e.preventDefault();\n" +
+	   		"e.stopPropagation();\n" +
+			"input.style.borderColor = '#d00';\n" +
+		"}, false);\n"+
+			
+		"input.addEventListener('dragleave', function(e) {\n"+
+	   		"e.preventDefault();\n" +
+	   		"e.stopPropagation();\n" +
+			"input.style.borderColor = '#ddd';\n" +
+		"}, false);\n"+
+		
+		"input.addEventListener('drop', function(e) {\n"+
+	   		"e.preventDefault();\n" +
+	   		"e.stopPropagation();\n" +
+	        "if(e.dataTransfer){\n" +
+	           "if(e.dataTransfer.files.length) {\n" +
+	            	"var ended = 0;\n"+
+	            	"for(var i = 0; i < e.dataTransfer.files.length; i++) {\n" +
+	            		"(function (file) {\n"+ 
+	            			"var reader = new FileReader()\n" +
+	            			"reader.addEventListener('load', function() { \n"+
+	            				"var httpRequest = new XMLHttpRequest();\n"+
+	            				"var username = document.getElementById('username');\n"+
+	            				"var password = document.getElementById('password');\n"+
+	            				"httpRequest.open('PUT', window.location.origin+window.location.pathname+'/'+file.name+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''), false);"+
+	            				"httpRequest.send(reader.result);"+
+	            				"ended++;\n"+
+	            				"if(ended ==  e.dataTransfer.files.length) {\n"+
+	            					"location.reload();\n"+
+	            				"}\n"+
+	            			"}, false);\n"+
+	            			"reader.readAsText(file);\n"+
+	            		"})(e.dataTransfer.files[i]);\n"+
+	        		"}\n"+
+	            "}\n" +
+	        "}\n" +
+		"}, false);\n"+
+	        
+		"</script>\n";	
 	}
 	
 	/**
