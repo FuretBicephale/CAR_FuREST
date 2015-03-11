@@ -17,12 +17,16 @@ public class RestTest {
 	String filename = "toto";
 	String contents = "TOTO";
 
-	public int putFile() throws IOException {
+	public int putFile(boolean anonymous) throws IOException {
 		URL url;
 		HttpURLConnection connection = null; 
 
 		// Creates connection
-		url = new URL("http://127.0.0.1:8080/rest/api/ftp/" + filename + "?username=user_test&password=user_test_password");
+		if(anonymous) {
+			url = new URL("http://127.0.0.1:8080/rest/api/ftp/" + filename);
+		} else {
+			url = new URL("http://127.0.0.1:8080/rest/api/ftp/" + filename + "?username=user_test&password=user_test_password");
+		}
 		connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestMethod("PUT");
 		connection.setRequestProperty("Content-Length", "" + contents.length());
@@ -53,12 +57,16 @@ public class RestTest {
 		return code;
 	}
 	
-	public int deleteFile() throws IOException {
+	public int deleteFile(boolean anonymous) throws IOException {
 		URL url;
 		HttpURLConnection connection = null; 
 		
 		// Creates connection
-		url = new URL("http://127.0.0.1:8080/rest/api/ftp/" + filename + "?username=user_test&password=user_test_password");
+		if(anonymous) {
+			url = new URL("http://127.0.0.1:8080/rest/api/ftp/" + filename);
+		} else {
+			url = new URL("http://127.0.0.1:8080/rest/api/ftp/" + filename + "?username=user_test&password=user_test_password");
+		}
 		connection = (HttpURLConnection)url.openConnection();
 		connection.setRequestMethod("DELETE");
 		connection.setRequestProperty("Content-Length", "0");
@@ -92,6 +100,7 @@ public class RestTest {
 		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp?username=user_test&password=user_test_password");
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(requestUrl.openStream()));
+		in.close();
 	}
 
 	/**
@@ -103,6 +112,19 @@ public class RestTest {
 		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp/TestFolder?username=user_test&password=user_test_password");
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(requestUrl.openStream()));
+		in.close();
+	}
+	
+	/**
+	 * Test CWD Request on an incorrect folder
+	 * @throws IOException
+	 */
+	@Test(expected = IOException.class)
+	public void testIncorrectFolderGetRequest() throws IOException {
+		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp/IncorrectFolder?username=user_test&password=user_test_password");
+		BufferedReader in = new BufferedReader(
+				new InputStreamReader(requestUrl.openStream()));
+		in.close();
 	}
 
 	/**
@@ -112,7 +134,7 @@ public class RestTest {
 	@Test
 	public void testFileGetRequest() throws IOException {
 
-		putFile();
+		putFile(false);
 
 		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp/" + filename + "?username=user_test&password=user_test_password");
 		BufferedReader in = new BufferedReader(
@@ -123,50 +145,21 @@ public class RestTest {
 		in.close();
 
 		assertEquals(contents, inputLine);
+		
 	}
 	
 	/**
 	 * Test RETR Request on an incorrect filename
 	 * @throws IOException
 	 */
-	@Test
+	@Test(expected=IOException.class)
 	public void testIncorrectFileGetRequest() throws IOException {
-
-		String incorrectFilename = "incorrectFile";
-		
-		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp/" + incorrectFilename + "?username=user_test&password=user_test_password");
+		String incorrectFilename = "incorrectFile";		
+		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp/" + incorrectFilename + "?username=user_test&password=user_test_password");		
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(requestUrl.openStream()));
-
-		String inputLine = in.readLine();
-				
 		in.close();
-
-		// Test...
-		assertEquals("<!DOCTYPE html>", inputLine);
 	}
-	
-	/**
-	 * Test RETR Request on a file of user_test as anonymous
-	 * @throws IOException
-	 */
-	@Test
-	public void testAnonymousFileGetRequest() throws IOException {
-
-		putFile();
-		
-		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp/" + filename);
-		BufferedReader in = new BufferedReader(
-				new InputStreamReader(requestUrl.openStream()));
-
-		String inputLine = in.readLine();
-
-		in.close();
-
-		// Test...
-		assertEquals("<!DOCTYPE html>", inputLine);
-	}
-	
 
 	/**
 	 * Test STOR Request
@@ -174,12 +167,9 @@ public class RestTest {
 	 */
 	@Test 
 	public void testPutRequest() throws IOException {
-		int code = putFile();
-		
+		int code = putFile(false);
 		assertTrue(code >= 200 && code < 300);
-		
-		//clean test
-		deleteFile();
+		deleteFile(false);
 	}
 
 	/**
@@ -188,10 +178,22 @@ public class RestTest {
 	 */
 	@Test 
 	public void testDeleteRequest() throws IOException {
-		putFile();	
-		
-		int code = deleteFile();
+		putFile(false);			
+		int code = deleteFile(false);
 		assertTrue(code >= 200 && code < 300);
 	} 
+	
+	/**
+	 * Test STOR Request as anonymous
+	 * @throws IOException 
+	 */
+	@Test(expected = IOException.class) 
+	public void testAnonymousPutRequest() throws IOException {
+		int code = putFile(true);
+		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp/" + filename);
+		BufferedReader in = new BufferedReader(
+				new InputStreamReader(requestUrl.openStream()));
+		in.close();
+	}
 
 }
