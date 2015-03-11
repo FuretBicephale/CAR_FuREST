@@ -59,8 +59,6 @@ public class RestToFtpResource {
 			session.close();
 			
 			return result;
-		} catch (SocketException e) {
-			return Response.status(Response.Status.GATEWAY_TIMEOUT).entity(HtmlErrorGenerator.ftpConnectionFailed(information, session)).type(MediaType.TEXT_HTML).build();
 		} catch (FTPBadAnswerException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(HtmlErrorGenerator.ftpBadAnswer(information, session, e.getCode())).type(MediaType.TEXT_HTML).build();
 		} catch (IOException e) {

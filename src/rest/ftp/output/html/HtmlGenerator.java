@@ -188,7 +188,7 @@ public class HtmlGenerator {
 			htmlResponse += HtmlGenerator.generatorUploadForm(information);
 			htmlResponse += HtmlGenerator.generateFooter(information);
 		} catch (IOException e) {
-			htmlResponse = HtmlErrorGenerator.ftpConnectionFailed(information, session);
+			return Response.status(Response.Status.GATEWAY_TIMEOUT).entity(HtmlErrorGenerator.ftpConnectionFailed(information, session)).type(MediaType.TEXT_HTML).build();
 		}
 		return Response.ok(htmlResponse, MediaType.TEXT_HTML).build();
 	}

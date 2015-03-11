@@ -29,14 +29,20 @@ Le package rest.ftp définie la ressource FTP de notre application ainsi que la 
 Les package rest.ftp.output.html et rest.ftp.output.json contiennent des classes nous permettant de créer rapidement des pages html (rest.ftp.output.html) ou json (rest.ftp.output.json) qui seront retournées en réponses de certaines requêtes REST.
 
 Try/catch :
-* Exception dans main()/Main
-* IOException dans generateDirectory()/HtmlGenerator
-* Socket/IO/FTPBadAnswerException dans processGetRequest()/RestToFTPRequest, process()/DeleteRestRequest, process()/PutRestRequest
+* Exception dans main()/Main : Verifie le lancement du serveur REST
+* IOException dans generateDirectory()/HtmlGenerator : Gere la completion de la commande FTP List lors de l'affichage d'un dossier
+* IOException/FTPBadAnswerException dans processGetRequest()/RestToFTPRequest : Gestion des erreurs de connexion (IOException) et les erreurs de requete FTP (FTPBadAnswerException) pour la methode GET
+* process()/DeleteRestRequest : Gestion des erreurs de connexion (IOException) et les erreurs de requete FTP (FTPBadAnswerException) pour la methode DELETE
+* process()/PutRestRequest : Gestion des erreurs de connexion (IOException) et les erreurs de requete FTP (FTPBadAnswerException) pour la methode PUT
 
 Throw :
-* Socket/SocketTimeout/IO/FTPBadAnswerException dans connect()/FTPSession
-* IO/FTPBadAnswerException dans login()/FTPSession
-* IOException dans close()/FTPSession, isDirectory()/FTPSession, getDirectory()/GetRestRequest
+* SocketException/SocketTimeoutException/IOException/FTPBadAnswerException dans connect()/FTPSession : Lance une exception si la connection au serveur FTP échoue ou que ce dernier renvoie une réponse négative
+* FTPBadAnswerException dans process()/PutRestRequest : Lance une exception si le serveur FTP ne peut pas enregistrer la ressource
+* FTPBadAnswerException dans getFile()/GetRestRequest : Lance une exception si la recupération de la ressource échoue
+* IOException/FTPBadAnswerException dans login()/FTPSession : Lance une exception si l'authentification sur le serveur FTP échoue
+* IOException dans close()/FTPSession : Lance une exception si la fermeture de la session échoue
+* isDirectory()/FTPSession : Lance une exception si la connexion au serveur FTP échoue
+* getDirectory()/GetRestRequest : Lance une exception si la connexion au serveur FTP échoue
 
 #### Code Samples
 
@@ -57,8 +63,7 @@ try {
 	session.close();
 			
 	return result;
-} catch (SocketException e) {
-	return Response.status(Response.Status.GATEWAY_TIMEOUT).entity(HtmlErrorGenerator.ftpConnectionFailed(information, session)).type(MediaType.TEXT_HTML).build();
+
 } catch (FTPBadAnswerException e) {
 	return Response.status(Response.Status.BAD_REQUEST).entity(HtmlErrorGenerator.ftpBadAnswer(information, session, e.getCode())).type(MediaType.TEXT_HTML).build();
 } catch (IOException e) {

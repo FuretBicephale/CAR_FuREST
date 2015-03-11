@@ -44,9 +44,6 @@ public class PutRestRequest {
 				throw new FTPBadAnswerException(code);
 			}
 			session.close();
-			
-		} catch (SocketException e) {
-			return Response.status(Response.Status.REQUEST_TIMEOUT).build();
 		} catch (FTPBadAnswerException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("Ftp server answer "+e.getCode()).build();
 		} catch (IOException e) {
