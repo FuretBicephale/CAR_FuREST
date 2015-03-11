@@ -81,4 +81,65 @@ public static String[] getLoginInformation(UriInfo ui) {
 	return login;
 }
 ```
+
+Gestion de la connexion de la session FTP
+```
+public void connect() throws SocketException, IOException, FTPBadAnswerException, SocketTimeoutException {
+	this.ftp = new FTPClient();
+	this.ftp.setDefaultTimeout(5000);
+	this.ftp.connect(this.address, this.port);
+		
+	int reply = this.ftp.getReplyCode();
+		
+	if(!FTPReply.isPositiveCompletion(reply)) {
+		throw new FTPBadAnswerException(reply);
+	}
+}
+```
+
+Savoir si une ressource est une dossier
+```
+public boolean isDirectory(String uri) throws IOException {
+	int returnCode;
+		
+	if(uri.equals("")) {
+		return true;
+	}
+		
+	this.ftp.changeWorkingDirectory(uri);
+	returnCode = this.ftp.getReplyCode();
+	    
+	if (returnCode == 550) {
+		return false;
+	} else {
+		return true;	    	
+	}
+}
+```
+
+Lister un dossier via JSON
+```
+String reponse = "[\n";
+		
+boolean first = true;
+		
+for(Entry<String, FTPFile> file : list.entrySet()) {
+			
+	if(first) {
+		first = false;
+		reponse += "\n";
+	}
+	else {
+		reponse += ",\n";
+	}
+	SimpleDateFormat format = new SimpleDateFormat("HH:mm DD MMM yyyy"); 
+	reponse += "{\n"+
+		"\"name\": \""+file.getKey()+"\"\n"+
+		"\"ressource\": \""+information.getPath()+file.getValue().getName()+"\"\n"+
+		"\"user\": \""+file.getValue().getUser()+"\"\n"+
+		"\"lastModif\": \""+(file.getValue().getTimestamp() != null ? format.format(file.getValue().getTimestamp().getTime()) : "")+"\"\n"+
+		"}";
+}
+reponse += "\n]";
+	
 #### Utilisation
