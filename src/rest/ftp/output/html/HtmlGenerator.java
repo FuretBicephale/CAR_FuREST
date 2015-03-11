@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -68,7 +70,8 @@ public class HtmlGenerator {
 	 */
 	public static String generatorLogin(RestRequestInformation information) {
 		String[] login = RestToFtpResource.getLoginInformation(information.getUriInfo());
-		return "Username : <input type=\"text\" id=\"username\" value=\""+login[0]+"\"/> Password : <input type=\"password\" id=\"password\" value=\""+login[1]+"\" /> <button onclick=\"open_ressource(window.location.origin+window.location.pathname)\">Recharger</button>";
+		return "<div style=\"float: left\">Username : <input type=\"text\" id=\"username\" value=\""+login[0]+"\"/> Password : <input type=\"password\" id=\"password\" value=\""+login[1]+"\" /> <button onclick=\"open_ressource(window.location.origin+window.location.pathname)\">Recharger</button></div>"+
+				"<div align=right>Envoyer des fichiers : <input id=\"file2\" type=\"file\" multiple /></div>";
 	}
 	
 	/**
@@ -97,32 +100,41 @@ public class HtmlGenerator {
 	   		"e.stopPropagation();\n" +
 			"input.style.borderColor = '#ddd';\n" +
 		"}, false);\n"+
+			
+		"function upload_files(files) {\n"+
+			"var ended = 0;\n"+
+			"for(var i = 0; i < files.length; i++) {\n" +
+				"(function (file) {\n"+ 
+					"var reader = new FileReader()\n" +
+					"reader.addEventListener('load', function() { \n"+
+						"var httpRequest = new XMLHttpRequest();\n"+
+        				"var username = document.getElementById('username');\n"+
+        				"var password = document.getElementById('password');\n"+
+        				"httpRequest.open('PUT', window.location.origin+window.location.pathname+'/'+file.name+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''), false);"+
+						"httpRequest.send(reader.result);"+
+						"ended++;\n"+
+						"if(ended == files.length) {\n"+
+	    					"location.reload();\n"+
+	    				"}\n"+
+	    			"}, false);\n"+
+	    			"reader.readAsText(file);\n"+
+	    		"})(files[i]);\n"+
+	    	"}\n"+
+		"}\n"+
 		
 		"input.addEventListener('drop', function(e) {\n"+
 	   		"e.preventDefault();\n" +
 	   		"e.stopPropagation();\n" +
 	        "if(e.dataTransfer){\n" +
 	           "if(e.dataTransfer.files.length) {\n" +
-	            	"var ended = 0;\n"+
-	            	"for(var i = 0; i < e.dataTransfer.files.length; i++) {\n" +
-	            		"(function (file) {\n"+ 
-	            			"var reader = new FileReader()\n" +
-	            			"reader.addEventListener('load', function() { \n"+
-	            				"var httpRequest = new XMLHttpRequest();\n"+
-	            				"var username = document.getElementById('username');\n"+
-	            				"var password = document.getElementById('password');\n"+
-	            				"httpRequest.open('PUT', window.location.origin+window.location.pathname+'/'+file.name+'?username='+(username !== undefined ? username.value : 'anonymous')+'&password='+(password !== undefined ? password.value : ''), false);"+
-	            				"httpRequest.send(reader.result);"+
-	            				"ended++;\n"+
-	            				"if(ended ==  e.dataTransfer.files.length) {\n"+
-	            					"location.reload();\n"+
-	            				"}\n"+
-	            			"}, false);\n"+
-	            			"reader.readAsText(file);\n"+
-	            		"})(e.dataTransfer.files[i]);\n"+
-	        		"}\n"+
+	           		"upload_files(e.dataTransfer.files);\n"+
 	            "}\n" +
 	        "}\n" +
+		"}, false);\n"+
+	        
+		"var input2 = document.getElementById('file2');\n" +
+		"input2.addEventListener('change', function() {\n"+
+   			"upload_files(input2.files);\n"+
 		"}, false);\n"+
 	        
 		"</script>\n";	
@@ -172,8 +184,7 @@ public class HtmlGenerator {
 	 * @param information Information about the request asking this code
 	 * @return The generated HTML Code as a String
 	 */
-	@Produces("text/html")
-	public static String generateDirectory(FTPSession session, RestRequestInformation information) {
+	public static Response generateDirectory(FTPSession session, RestRequestInformation information) {
 		String htmlResponse = "";
 
 		try {
@@ -185,7 +196,7 @@ public class HtmlGenerator {
 		} catch (IOException e) {
 			htmlResponse = HtmlErrorGenerator.ftpConnectionFailed(information, session);
 		}
-		return htmlResponse;
+		return Response.ok(htmlResponse, MediaType.TEXT_HTML).build();
 	}
 
 }

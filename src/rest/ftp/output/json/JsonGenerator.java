@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -19,8 +21,7 @@ import rest.ftp.RestRequestInformation;
  */
 public class JsonGenerator {
 
-	@Produces("application/json")
-	public static String generateDirectory(FTPSession session, RestRequestInformation information) {
+	public static Response generateDirectory(FTPSession session, RestRequestInformation information) {
 		String response = "";
 
 		try {
@@ -28,7 +29,7 @@ public class JsonGenerator {
 		} catch (IOException e) {
 			response = "[]";
 		}
-		return response;
+		return Response.ok(response, MediaType.APPLICATION_JSON).build();
 	}
 
 	private static String generateFTPFileList(FTPFile[] listFiles,RestRequestInformation information) {

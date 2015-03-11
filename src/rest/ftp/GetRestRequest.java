@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
@@ -28,8 +30,8 @@ public class GetRestRequest {
 	 * @return A byte array containing the file if it's found, null otherwise
 	 * @throws FTPBadAnswerException 
 	 */
-	@Produces("application/octet-stream")
-	public static byte[] getFile(FTPSession session, RestRequestInformation information) throws IOException, FTPBadAnswerException {
+
+	public static Response getFile(FTPSession session, RestRequestInformation information) throws IOException, FTPBadAnswerException {
 		int length;
 		byte[] buffer = null;
 
@@ -47,18 +49,26 @@ public class GetRestRequest {
 
 			int oldLength = buffer != null ? buffer.length : 0;
 			byte[] bufferInternal = new byte[length+oldLength];
+			
+			System.out.println("Realoc "+oldLength+" => "+length);
 
 			if(buffer != null)
-				System.arraycopy(buffer, 0, bufferInternal, 0, buffer.length);
+				System.arraycopy(buffer, 0, bufferInternal, 0, oldLength);
 
-			stream.read(bufferInternal, oldLength, length);
-			buffer = bufferInternal;
-
+			int read = stream.read(bufferInternal, oldLength, length);
+			
+			if(read != length) {
+				buffer = new byte[oldLength+read];
+				System.arraycopy(bufferInternal, 0, buffer, 0, oldLength+read);
+			}
+			else {
+				buffer = bufferInternal;
+			}
 		}
 		
 		stream.close();
 		
-		return buffer;
+		return Response.ok(buffer, MediaType.APPLICATION_OCTET_STREAM).build();
 		
 	}
 	
@@ -69,17 +79,17 @@ public class GetRestRequest {
 	 * @return A byte array which contains HTML Code to display the directory content
 	 * @throws IOException 
 	 */
-	public static byte[] getDirectory(FTPSession session, RestRequestInformation information) {
+	public static Response getDirectory(FTPSession session, RestRequestInformation information) {
 		String output = "html";
 		if(information.getUriInfo().getQueryParameters().containsKey("output")) {
 			output = information.getUriInfo().getQueryParameters().get("output").get(0);
 		}
 		
 		if(output.equals("json")) {
-			return JsonGenerator.generateDirectory(session, information).getBytes();
+			return JsonGenerator.generateDirectory(session, information);
 		}
 		else {
-			return HtmlGenerator.generateDirectory(session, information).getBytes();
+			return HtmlGenerator.generateDirectory(session, information);
 		}
 	}
 	

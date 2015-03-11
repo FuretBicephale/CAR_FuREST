@@ -1,6 +1,6 @@
 package test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -17,7 +17,7 @@ public class RestTest {
 	String filename = "toto";
 	String contents = "TOTO";
 
-	public void putFile() throws IOException {
+	public int putFile() throws IOException {
 		URL url;
 		HttpURLConnection connection = null; 
 
@@ -45,11 +45,15 @@ public class RestTest {
 			response.append('\r');
 		}
 		rd.close();
+		
+		int code = connection.getResponseCode();
 
 		connection.disconnect(); 
+		
+		return code;
 	}
 	
-	public void deleteFile() throws IOException {
+	public int deleteFile() throws IOException {
 		URL url;
 		HttpURLConnection connection = null; 
 		
@@ -71,8 +75,12 @@ public class RestTest {
 			response.append('\r');
 		}
 		rd.close();
+		
+		int code = connection.getResponseCode();
 
 		connection.disconnect(); 
+		
+		return code;
 	}
 
 	/**
@@ -131,7 +139,7 @@ public class RestTest {
 				new InputStreamReader(requestUrl.openStream()));
 
 		String inputLine = in.readLine();
-
+				
 		in.close();
 
 		// Test...
@@ -166,9 +174,12 @@ public class RestTest {
 	 */
 	@Test 
 	public void testPutRequest() throws IOException {
-		putFile();
+		int code = putFile();
+		
+		assertTrue(code >= 200 && code < 300);
+		
+		//clean test
 		deleteFile();
-		// Test...
 	}
 
 	/**
@@ -178,8 +189,9 @@ public class RestTest {
 	@Test 
 	public void testDeleteRequest() throws IOException {
 		putFile();	
-		deleteFile();
-		// Test...
+		
+		int code = deleteFile();
+		assertTrue(code >= 200 && code < 300);
 	} 
 
 }

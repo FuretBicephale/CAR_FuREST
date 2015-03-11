@@ -13,6 +13,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -37,9 +38,7 @@ public class RestToFtpResource {
 	 */
 	@GET
 	@Path("{uri: .*}")
-	public byte[] processGetRequest(@PathParam("uri") String uri, @Context UriInfo ui) {
-		
-		byte[] result = null;
+	public Response processGetRequest(@PathParam("uri") String uri, @Context UriInfo ui) {
 		
 		RestRequestInformation information = new RestRequestInformation();
 		information.setURI(uri);
@@ -53,6 +52,8 @@ public class RestToFtpResource {
 			session.connect();
 			session.login(login[0], login[1]);
 			
+			Response result;
+			
 			if(session.isDirectory(uri) || uri.equals("")) {
 				result = GetRestRequest.getDirectory(session, information);
 			} else {
@@ -60,15 +61,15 @@ public class RestToFtpResource {
 			}
 						
 			session.close();
+			
+			return result;
 		} catch (SocketException e) {
-			result = HtmlErrorGenerator.ftpConnectionFailed(information, session).getBytes();
+			return Response.ok(HtmlErrorGenerator.ftpConnectionFailed(information, session), MediaType.TEXT_HTML).build();
 		} catch (FTPBadAnswerException e) {
-			result = HtmlErrorGenerator.ftpBadAnswer(information, session, e.getCode()).getBytes();
+			return Response.ok(HtmlErrorGenerator.ftpBadAnswer(information, session, e.getCode()), MediaType.TEXT_HTML).build();
 		} catch (IOException e) {
-			result = HtmlErrorGenerator.ftpConnectionFailed(information, session).getBytes();
+			return Response.ok(HtmlErrorGenerator.ftpConnectionFailed(information, session), MediaType.TEXT_HTML).build();
 		}
-		
-		return result;
 	}
 	
 	/**
