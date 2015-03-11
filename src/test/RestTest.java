@@ -189,11 +189,7 @@ public class RestTest {
 	 */
 	@Test(expected = IOException.class) 
 	public void testAnonymousPutRequest() throws IOException {
-		int code = putFile(true);
-		URL requestUrl = new URL("http://127.0.0.1:8080/rest/api/ftp/" + filename);
-		BufferedReader in = new BufferedReader(
-				new InputStreamReader(requestUrl.openStream()));
-		in.close();
+		putFile(true);
 	}
 
 }
