@@ -143,3 +143,7 @@ for(Entry<String, FTPFile> file : list.entrySet()) {
 reponse += "\n]";
 	
 #### Utilisation
+
+Pour lancer la passerelle REST : Exécuter main.java
+
+Pour lancer les tests : Exécuter RestTest.java (La passerelle REST ainsi que le serveur FTP doivent être en cours d'exécution)
