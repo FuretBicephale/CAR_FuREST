@@ -45,17 +45,17 @@ Gestion de la commande GET : genération du message HTTP en fonction des erreurs
 try {
 	session.connect();
 	session.login(login[0], login[1]);
-			
+
 	Response result;
-			
+
 	if(session.isDirectory(uri) || uri.equals("")) {
 		result = GetRestRequest.getDirectory(session, information);
 	} else {
 		result = GetRestRequest.getFile(session, information);
 	}
-						
+
 	session.close();
-			
+
 	return result;
 } catch (SocketException e) {
 	return Response.status(Response.Status.GATEWAY_TIMEOUT).entity(HtmlErrorGenerator.ftpConnectionFailed(information, session)).type(MediaType.TEXT_HTML).build();
@@ -88,9 +88,9 @@ public void connect() throws SocketException, IOException, FTPBadAnswerException
 	this.ftp = new FTPClient();
 	this.ftp.setDefaultTimeout(5000);
 	this.ftp.connect(this.address, this.port);
-		
+
 	int reply = this.ftp.getReplyCode();
-		
+
 	if(!FTPReply.isPositiveCompletion(reply)) {
 		throw new FTPBadAnswerException(reply);
 	}
@@ -101,18 +101,18 @@ Savoir si une ressource est une dossier
 ```
 public boolean isDirectory(String uri) throws IOException {
 	int returnCode;
-		
+
 	if(uri.equals("")) {
 		return true;
 	}
-		
+
 	this.ftp.changeWorkingDirectory(uri);
 	returnCode = this.ftp.getReplyCode();
-	    
+
 	if (returnCode == 550) {
 		return false;
 	} else {
-		return true;	    	
+		return true;
 	}
 }
 ```
@@ -120,11 +120,11 @@ public boolean isDirectory(String uri) throws IOException {
 Lister un dossier via JSON
 ```
 String reponse = "[\n";
-		
+
 boolean first = true;
-		
+
 for(Entry<String, FTPFile> file : list.entrySet()) {
-			
+
 	if(first) {
 		first = false;
 		reponse += "\n";
@@ -132,7 +132,7 @@ for(Entry<String, FTPFile> file : list.entrySet()) {
 	else {
 		reponse += ",\n";
 	}
-	SimpleDateFormat format = new SimpleDateFormat("HH:mm DD MMM yyyy"); 
+	SimpleDateFormat format = new SimpleDateFormat("HH:mm DD MMM yyyy");
 	reponse += "{\n"+
 		"\"name\": \""+file.getKey()+"\"\n"+
 		"\"ressource\": \""+information.getPath()+file.getValue().getName()+"\"\n"+
@@ -141,7 +141,8 @@ for(Entry<String, FTPFile> file : list.entrySet()) {
 		"}";
 }
 reponse += "\n]";
-	
+```
+
 #### Utilisation
 
 Pour lancer la passerelle REST : Exécuter main.java
