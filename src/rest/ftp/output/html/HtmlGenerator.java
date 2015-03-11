@@ -182,7 +182,7 @@ public class HtmlGenerator {
 	 * Generate HTML Code as a String which creates an entire page which print the content of a directory
 	 * @param session The session which is sending the request
 	 * @param information Information about the request asking this code
-	 * @return The generated HTML Code as a String
+	 * @return The generated HTML Code as a Response
 	 */
 	public static Response generateDirectory(FTPSession session, RestRequestInformation information) {
 		String htmlResponse = "";
