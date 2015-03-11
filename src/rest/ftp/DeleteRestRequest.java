@@ -2,12 +2,10 @@ package rest.ftp;
 
 import java.io.IOException;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 
 import javax.ws.rs.core.Response;
 
 import rest.exception.FTPBadAnswerException;
-import rest.ftp.output.html.HtmlErrorGenerator;
 
 /**
  * A class which only contains a static method used to send a RM Request to a FTPServer
@@ -41,7 +39,7 @@ public class DeleteRestRequest {
 			return Response.status(Response.Status.REQUEST_TIMEOUT).build();
 		}
 		
-		return Response.status(Response.Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 }

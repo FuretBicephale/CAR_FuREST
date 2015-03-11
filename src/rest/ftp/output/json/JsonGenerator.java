@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 

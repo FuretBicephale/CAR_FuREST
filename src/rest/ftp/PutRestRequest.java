@@ -4,12 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.net.ftp.FTPReply;
+
 import rest.exception.FTPBadAnswerException;
-import rest.ftp.output.html.HtmlErrorGenerator;
 
 /**
  * A class which only contains a static method used to send a STORE Request to a FTPServer
@@ -37,7 +37,14 @@ public class PutRestRequest {
 
 			
 			session.getFTPClient().storeFile(information.getURI(), stream);
+			
+			int code = session.getFTPClient().getReplyCode();
+			
+			if(FTPReply.isNegativePermanent(code) || FTPReply.isNegativeTransient(code)) {
+				throw new FTPBadAnswerException(code);
+			}
 			session.close();
+			
 		} catch (SocketException e) {
 			return Response.status(Response.Status.REQUEST_TIMEOUT).build();
 		} catch (FTPBadAnswerException e) {
@@ -46,7 +53,7 @@ public class PutRestRequest {
 			return Response.status(Response.Status.REQUEST_TIMEOUT).build();
 		}
 		
-		return Response.status(Response.Status.ACCEPTED).build();
+		return Response.ok().build();
 	}
 
 }

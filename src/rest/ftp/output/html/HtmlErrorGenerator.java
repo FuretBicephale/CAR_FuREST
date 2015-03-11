@@ -1,7 +1,5 @@
 package rest.ftp.output.html;
 
-import java.io.IOException;
-
 import rest.ftp.FTPSession;
 import rest.ftp.RestRequestInformation;
 

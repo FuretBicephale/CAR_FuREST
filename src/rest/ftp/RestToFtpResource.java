@@ -2,10 +2,6 @@ package rest.ftp;
 
 import java.io.IOException;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;

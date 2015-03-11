@@ -40,4 +40,45 @@ Throw :
 
 #### Code Samples
 
+Gestion de la commande GET : genération du message HTTP en fonction des erreurs et du type de la ressource
+```
+try {
+	session.connect();
+	session.login(login[0], login[1]);
+			
+	Response result;
+			
+	if(session.isDirectory(uri) || uri.equals("")) {
+		result = GetRestRequest.getDirectory(session, information);
+	} else {
+		result = GetRestRequest.getFile(session, information);
+	}
+						
+	session.close();
+			
+	return result;
+} catch (SocketException e) {
+	return Response.status(Response.Status.GATEWAY_TIMEOUT).entity(HtmlErrorGenerator.ftpConnectionFailed(information, session)).type(MediaType.TEXT_HTML).build();
+} catch (FTPBadAnswerException e) {
+	return Response.status(Response.Status.BAD_REQUEST).entity(HtmlErrorGenerator.ftpBadAnswer(information, session, e.getCode())).type(MediaType.TEXT_HTML).build();
+} catch (IOException e) {
+	return Response.status(Response.Status.GATEWAY_TIMEOUT).entity(HtmlErrorGenerator.ftpConnectionFailed(information, session)).type(MediaType.TEXT_HTML).build();
+}
+```
+
+Gestion de l'authentification
+```
+public static String[] getLoginInformation(UriInfo ui) {
+	String[] login = new String[2];
+	if(ui.getQueryParameters().containsKey("username") && ui.getQueryParameters().containsKey("password")) {
+		login[0] = ui.getQueryParameters().get("username").get(0);
+		login[1] = ui.getQueryParameters().get("password").get(0);
+	}
+	else {
+		login[0] = "anonymous";
+		login[1] = "";
+	}
+	return login;
+}
+```
 #### Utilisation
