@@ -41,29 +41,24 @@ public class GetRestRequest {
 			throw new FTPBadAnswerException(session.getFTPClient().getReplyCode());
 		}
 		
-		if(stream.available() == 0) {
-			buffer = new byte[0];
-		}
+		int temporyBufferSize = 1024;
 		
-		while((length = stream.available()) > 0) {
-
+		byte[] temporyBuffer = new byte[temporyBufferSize];
+		int nbRead;
+		
+		while((nbRead = stream.read(temporyBuffer, 0, temporyBufferSize)) > 0) {
 			int oldLength = buffer != null ? buffer.length : 0;
-			byte[] bufferInternal = new byte[length+oldLength];
 			
-			System.out.println("Realoc "+oldLength+" => "+length);
-
-			if(buffer != null)
-				System.arraycopy(buffer, 0, bufferInternal, 0, oldLength);
-
-			int read = stream.read(bufferInternal, oldLength, length);
+			byte[] buffer2 = new byte[oldLength+nbRead];
 			
-			if(read != length) {
-				buffer = new byte[oldLength+read];
-				System.arraycopy(bufferInternal, 0, buffer, 0, oldLength+read);
+			if(buffer != null) {
+				System.arraycopy(buffer, 0, buffer2, 0, oldLength);
 			}
-			else {
-				buffer = bufferInternal;
-			}
+			
+			System.arraycopy(temporyBuffer, 0, buffer2, oldLength, nbRead);
+			
+			buffer = buffer2;
+			
 		}
 		
 		stream.close();
