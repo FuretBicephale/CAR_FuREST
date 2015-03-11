@@ -34,7 +34,7 @@ public class RestToFtpResource {
 	 * If the uri refers to the path of a folder, it will be a LIST Request, if it refers to the path of a file, it will be a RETR Request.
 	 * @param uri The URI of the GET Request. It affects the kind of request sent to the FTPServer.
 	 * @param ui Some basics informations about the URI
-	 * @return Either the content of the requested file (RETR) or the requested folder (LIST) as a byte array
+	 * @return Either the content of the requested file (RETR) or the requested folder (LIST) as a Response
 	 */
 	@GET
 	@Path("{uri: .*}")
