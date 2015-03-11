@@ -24,19 +24,11 @@ import rest.api.JaxRsApiApplication;
 @Configuration
 public class AppConfig {	
 	
-	/**
-	 * 
-	 * @return
-	 */
 	@Bean(destroyMethod = "shutdown")
 	public SpringBus cxf() {
 		return new SpringBus();
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	@Bean @DependsOn("cxf")
 	public Server jaxRsServer() {
 		
@@ -51,11 +43,7 @@ public class AppConfig {
 		return factory.create();
 		
 	}
-		
-	/**
-	 * 
-	 * @return
-	 */
+
 	@Bean
 	public JacksonJsonProvider jsonProvider() {
 		return new JacksonJsonProvider();
