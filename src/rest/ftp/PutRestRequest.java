@@ -3,7 +3,6 @@ package rest.ftp;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketException;
 
 import javax.ws.rs.core.Response;
 

@@ -1,7 +1,6 @@
 package rest.ftp;
 
 import java.io.IOException;
-import java.net.SocketException;
 
 import javax.ws.rs.core.Response;
 
